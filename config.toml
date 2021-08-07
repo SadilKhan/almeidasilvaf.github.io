@@ -108,40 +108,34 @@ enableEmoji = true
     weight = 1
 
   [[menu.header]]
-    name = "Softwares"
+    name = "Softwares & Data"
     title = "Softwares"
     url = "/projects/"
     weight = 2
     
   [[menu.header]]
-    name = "Data products"
-    title = "Softwares"
-    url = "/products/"
-    weight = 3
-
-  [[menu.header]]
     name = "Publications"
     title = "Publications"
     url = "/publications/"
-    weight = 4
+    weight = 3
 
   [[menu.header]]
     name = "Talks"
     title = "Talks"
     url = "/talk/"
-    weight = 5
+    weight = 4
 
   [[menu.header]]
     name = "Teaching"
     title = "Teaching"
     url = "/teaching/"
-    weight = 6
+    weight = 5
 
   [[menu.header]]
     name = "Blog"
     title = "Blog"
     url = "/blog/"
-    weight = 7
+    weight = 6
 
   # Configure footer
   [[menu.footer]]
