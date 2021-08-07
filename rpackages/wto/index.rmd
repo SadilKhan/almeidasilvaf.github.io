@@ -1,0 +1,429 @@
+---
+title: "wTO"
+subtitle: "Computing Weighted Topological Overlaps (wTO) & Consensus wTO
+        Network"
+excerpt: "Computes the Weighted Topological Overlap with positive and negative signs (wTO) networks given a data frame containing the mRNA count/ expression/ abundance per sample, and a vector containing the interested nodes of interaction (a subset of the elements of the full data frame). It also computes the cut-off threshold or p-value based on the individuals bootstrap or the values reshuffle per individual. It also allows the construction of a consensus network, based on multiple wTO networks. The package includes a visualization tool for the networks."
+date: 2018-11-17
+date_end: "2018-11-17"
+show_post_time: false
+event: "CRAN"
+event_url: https://cran.r-project.org/web/packages/wTO/
+author: "Deisy Morselli Gysi"
+draft: false
+# layout options: single, single-sidebar
+layout: single
+categories:
+- r packages
+- co-expression
+- networks
+links:
+- icon: box-open
+  icon_pack: fas
+  name: package
+  url: https://cran.r-project.org/web/packages/wTO/
+---
+
+## wTO: Computing Weighted Topological Overlaps (wTO) & Consensus wTO Network
+
+
+Computes the Weighted Topological Overlap with positive and negative signs (wTO) networks (Nowick et al. (2009) <doi:10.1073/pnas.0911376106>) given a data frame containing the mRNA count/ expression/ abundance per sample, and a vector containing the interested nodes of interaction (a subset of the elements of the full data frame). 
+
+It also computes the cut-off threshold or p-value based on the individuals bootstrap or the values reshuffle per individual (Gysi et al. 2017 <https://doi.org/10.1186/s12859-018-2351-7>). It also allows the construction of a **consensus network**, based on multiple wTO networks. The package includes a visualization tool for the networks.
+
+You can download the package from CRAN using:
+
+``install.packages('wTO')``
+
+
+
+### Input data
+
+The `wTO` package, can be used on any kind of count data, but we highly
+recommend to use normalized and quality controlled data according to the
+data type such as RMA, MD5 for microarray, RPKM, TPM or PKM for RNA-seq,
+sample normalized data for metagenomics.
+
+As an example, the package contains three data sets, two from microarray
+chips (`Microarray_Expression1` and `Microarray_Expression2`), and one
+from abundance in metagenomics (`metagenomics_abundance`).
+
+### wTO 
+
+The wTO method is a method for building networks based on pairwise
+correlations normalized and corrected by all shared correlations. For
+this reason, the user can choose a set of factors of interest, called
+here *Overlaps*, those are the nodes that will be corrected and
+normalized by all other factors in the dataset. Those factors can be
+Transcription Factor, long non coding RNAs, a set of species of interest
+etc.
+
+### Genomic data
+
+The `wTO` package contains 2 data sets that were obtained using
+expression arrays (`Microarray_Expression1` and
+`Microarray_Expression2`), they were previously normalized and the
+quality control was done. We will use it to build the wTO network using
+the different methods implemented in the package.
+
+First we are going to inspect those data sets.
+
+
+```{r}
+require(wTO)
+require(magrittr)
+```
+
+```{r}
+data("ExampleGRF")
+data("Microarray_Expression1")
+data("Microarray_Expression2")
+
+dim(Microarray_Expression1)
+
+dim(Microarray_Expression2)
+
+Microarray_Expression1[1:5,1:5]
+```
+
+
+```{r}
+head(ExampleGRF)
+```
+
+
+Please, note that the **individuals are in the columns** and the **gene expressions are in the rows**. Moreover, the `row.names()` are the names
+of the genes. The list of genes that will be used for measuring the
+interactions are in `ExampleGRF`. There should always be more than 2 of
+them contained in the expression set. If there are no common nodes to be
+measured, the method will return an error.
+
+```{r}
+sum(ExampleGRF$x %in% row.names(Microarray_Expression1))
+```
+
+#### Running the wTO
+
+We can run the `wTO` package with 3 modes. The first one is running the
+wTO without resampling. For that we can use the `wTO()` . The second
+one, `wTO.Complete()`, gives you the whole diagnosis plot,
+hard-threshold on the *ω*<sub>*i*, *j*</sub>, the
+*ω*<sub>*i*, *j*</sub>, |*ω*<sub>*i*, *j*</sub>| values and p-values.
+The last mode, `wTO.fast()`, just returns the *ω*<sub>*i*, *j*</sub>
+values and p-value.
+
+##### Using the `wTO()` function:
+
+To use the `wTO()` function, the first step is to compute the
+correlation among the nodes of interest using `CorrelationOverlap()` and
+then use it as input for the `wTO()`. In the first function the user is
+allowed to choose the method for correlation between Pearson ('p') or
+Spearman ('s'). The second function allows the choice between absolute
+values ('abs') or signed values ('sign'). Please, keep in mind that the
+result of the `wTO()` function is a matrix, and it can be easily
+converted to an edge list using the function `wTO.in.line()`.
+
+
+```{r}
+wTO_p_abs = CorrelationOverlap(Data = Microarray_Expression1,
+                               Overlap = ExampleGRF$x, 
+                               method = 'p') %>% 
+  wTO(., sign = 'abs')
+wTO_p_abs[1:5,1:5]
+
+wTO_p_abs %<>% 
+  wTO.in.line()
+
+head(wTO_p_abs)
+
+
+wTO_s_abs = CorrelationOverlap(Data = Microarray_Expression1, 
+                               Overlap = ExampleGRF$x, 
+                               method = 's') %>% 
+  wTO(., sign = 'abs') %>% 
+  wTO.in.line()
+head(wTO_s_abs)
+
+wTO_p_sign = CorrelationOverlap(Data = Microarray_Expression1, 
+                                Overlap = ExampleGRF$x, 
+                                method = 'p') %>% 
+  wTO(., sign = 'sign') %>%
+  wTO.in.line()
+head(wTO_p_sign)
+
+wTO_s_sign = CorrelationOverlap(Data = Microarray_Expression1,
+                                Overlap = ExampleGRF$x, 
+                                method = 's') %>%
+  wTO(., sign = 'sign') %>% 
+  wTO.in.line()
+head(wTO_s_sign)
+```
+
+
+##### Using the `wTO.Complete()` function:
+
+The usage of the function `wTO.Complete()` is straight-forward. No
+plug-in-functions() are necessary. The arguments parsed to the
+`wTO.Complete()` functions are the number *k* of threads that should be
+used for computing the *ω*<sub>*i*,*j*</sub>, the amount of
+replications, *n*, the expression matrix, *Data*, the *Overlapping*
+nodes, the correlation *method* (**Pearson** or **Spearman**) for the
+*method\_resampling* that should be **Bootstrap**, **BlockBootstrap** or
+**Reshuffle**, the p-value correction method, *pvalmethod* (any from the
+p.adjust.methods), if the correlation should be saved, the *δ* is the
+expected difference, *expected.diff*, between the resampled values and
+the *ω*<sub>*i*, *j*</sub> and also if the diagnosis *plot* should be
+plotted.
+
+```{r}
+wTO_s_sign_complete = wTO.Complete(k = 5, 
+                                   n = 250,
+                                   Data = Microarray_Expression1, 
+                                   Overlap = ExampleGRF$x, 
+                                   method = 'p', 
+                                   method_resampling = 'Bootstrap',
+                                   pvalmethod = 'BH', 
+                                   savecor = TRUE, 
+                                   expected.diff = 0.2, 
+                                   plot = TRUE)
+```
+
+
+The diagnosis plot shows the quality of the resampling (first two
+plots). The closer the purple line to the black line, the better. The
+*ω*<sub>*i*,*j*</sub> vs |*ω*<sub>*i*,*j*</sub>| shows the amount of
+*ω*<sub>*i*, *j*</sub> being affected by cancellations on the heuristics
+of the method, the more similar to a **smile plot**, the better. The
+last two plots show the relashionship between p-values and the
+*ω*<sub>*i*,*j*</sub>. It is expected that higher *ω*'s presents lower
+p-values.
+
+The resulting object from the `wTO.Complete()` function is a list
+containing: 
+* wTO an edge list of informations such as the signed and
+unsigned *ω*<sub>*i*,*j*</sub> values its raw and adjusted p-values. 
+* Correlation values, also as an edge list 
+* Quantiles, the quantiles from the empirical distribution and the calculated *ω*'s from the
+original data, for both signed and unsigned networks.
+
+```{r}
+wTO_s_sign_complete
+```
+
+
+##### Using the `wTO.fast()` function:
+
+The `wTO.fast()` function is a simplified verion of the `wTO.Complete()`
+function, that doesn't return diagnosis, correlation, nor the quantiles,
+but allows the user to choose the method for correlation, the sign of
+the *ω* to be calculated and the resampling method should be one of the
+two **Bootrastap** or **BlockBootstrap**. The p-values are the raw
+p-values and if the user desires to calculate its correction it can be
+easily done as shown above.
+
+```{r}
+fast_example = wTO.fast(Data = Microarray_Expression1, 
+                        Overlap = ExampleGRF$x, 
+                        method = 's', 
+                        sign = 'sign', 
+                        delta = 0.2,
+                        n = 250, 
+                        method_resampling = 'Bootstrap')
+
+
+head(fast_example)
+
+fast_example$adj.pval = p.adjust(fast_example$pval)
+```
+
+
+### Metagenomic data
+
+Along with the expression data, the `wTO` package also includes a
+metagenomics dataset that is the abundance of some OTU's in bacterias
+collected since 1997. More about this data can be found at
+\[<https://www.ebi.ac.uk/metagenomics/projects/ERP013549>\].
+
+The OTU (Operational Taxonomic Units) contains the taxonomy of the
+particular OTU and from Week1 to Week98, the abundance of that
+particular OTU in that week.
+
+```{r}
+data("metagenomics_abundance")
+metagenomics_abundance[2:10, 1:10]
+```
+
+
+Before we are able to define the network, we have first to understand
+the patterns of autocorrelation of each species, and then define the
+lag, that will be used for the **BlockBootstrap** resampling in the
+`wTO.Complete()` or `fast.wTO()` functions. To define the lag, we use
+autocorrelation function `acf()`.
+
+```{r}
+row.names(metagenomics_abundance) = metagenomics_abundance$OTU
+metagenomics_abundance = metagenomics_abundance[,-1]
+par(mfrow = c(3,3))
+for ( i in 1:nrow(metagenomics_abundance)){
+  acf(t(metagenomics_abundance[i,]))
+}
+```
+
+
+
+Because most of them have only a high autocorrelation with itself or
+maximum 2 weeks, we will use a lag of 2 for the blocks used in the
+bootstrap.
+
+The functions `wTO.fast()` and `wTO.Complete()` are able to accomodate
+the lag parameter, therefore, they will be used here.
+
+```{r}
+Meta_fast = wTO.fast(Data = metagenomics_abundance, 
+                     Overlap = row.names(metagenomics_abundance), 
+                     method = 'p', 
+                     sign = 'sign', 
+                     n = 250, 
+                     method_resampling = 'BlockBootstrap', 
+                     lag = 2)
+
+
+Meta_Complete = wTO.Complete(k = 1, 
+                             n = 250, 
+                             Data = metagenomics_abundance, 
+                             Overlap = row.names(metagenomics_abundance),
+                             method = 's' , 
+                             method_resampling = 'BlockBootstrap', 
+                             lag = 2 )
+
+```
+
+
+
+Consensus Network
+-----------------
+
+From the expression data-sets, we are able to draw a Consensus Network.
+For that, the function `wTO.Consensus()` can be used. This function
+works in a special way, that the user should pass a list of data.frames
+containing the Nodes names and the wTO and p-values. We show an example
+above.
+
+Let's calculate the networks the same way we did in the Section [Genomic
+data](#genomic-data).
+
+```{r}
+wTO_Data1 = wTO.fast(Data = Microarray_Expression1, 
+                     Overlap = ExampleGRF$x, 
+                     method = 'p', 
+                     n = 250)
+
+wTO_Data2 = wTO.fast(Data = Microarray_Expression2, 
+                     Overlap = ExampleGRF$x, 
+                     method = 'p', 
+                     n = 250)
+
+```
+
+
+
+Now, let's combine both networks in one Consensus Network.
+
+```{r}
+CN_expression = wTO.Consensus(data = list (wTO_Data1 = data.frame
+                                           (Node.1 = wTO_Data1$Node.1, 
+                                             Node.2 = wTO_Data1$Node.2, 
+                                             wTO = wTO_Data1$wTO,
+                                             pval = wTO_Data1$pval)
+                                           , wTO_Data2C = data.frame
+                                           (Node.1 = wTO_Data2$Node.1, 
+                                             Node.2 = wTO_Data2$Node.2, 
+                                             wTO = wTO_Data2$wTO,
+                                             pval = wTO_Data2$pval)))
+```
+
+
+Or using the `wTO.Complete()`:
+
+```{r}
+wTO_Data1C = wTO.Complete(Data = Microarray_Expression1, 
+                          Overlap = ExampleGRF$x, 
+                          method = 'p', 
+                          n = 250, 
+                          k = 5)
+
+wTO_Data2C = wTO.Complete(Data = Microarray_Expression2, 
+                          Overlap = ExampleGRF$x, 
+                          method = 'p', 
+                          n = 250, 
+                          k = 5)
+```
+
+
+
+Now, let's combine both networks in one Consensus Network.
+```{r}
+
+CN_expression = wTO.Consensus(data = list (wTO_Data1C = data.frame
+                                           (Node.1 = wTO_Data1C$wTO$Node.1, 
+                                             Node.2 = wTO_Data1C$wTO$Node.2, 
+                                             wTO = wTO_Data1C$wTO$wTO_sign,
+                                             pval = wTO_Data1C$wTO$pval_sig), wTO_Data2C = data.frame
+                                           (Node.1 = wTO_Data2C$wTO$Node.1, 
+                                             Node.2 = wTO_Data2C$wTO$Node.2, 
+                                             wTO = wTO_Data2C$wTO$wTO_sign,
+                                             pval = wTO_Data2C$wTO$pval_sig)))
+
+head(CN_expression)
+```
+
+
+Visualization
+-------------
+
+The `wTO` package also includes an interactive visualization tool that
+can be used to inspect the results of the wTO netwoks or Consensus
+Network.
+
+The arguments given to this function are the Nodes names, its wTO and
+p-values. Optionals are the cutoffs that can be applied to the p-value
+or to the wTO value. We highly reccomend using both by subseting the
+data previous to the visualization. The layout of the network can be
+also chosen from a variety that are implemented in igraph package, for
+the the Make\_Cluster argument many clustering algorithms that are
+implemented in igraph can be used. The final graph can be exported as an
+`html` or as `png`.
+
+```{r}
+Visualization = NetVis(Node.1 = CN_expression$Node.1, 
+                       Node.2 = CN_expression$Node.2,
+                       wTO = CN_expression$CN, 
+                       pval = CN_expression$pval.fisher, 
+                       cutoff = list(kind = 'pval', value = 0.001),
+                       MakeGroups = 'louvain', 
+                       layout = 'layout_components')
+
+
+CN_expression_filtered = subset(CN_expression, 
+                                abs(CN_expression$CN)> 0.4 &
+                                  CN_expression$pval.fisher < 0.0001)
+
+dim(CN_expression_filtered)
+
+
+Visualization2 = NetVis(
+  Node.1 = CN_expression_filtered$Node.1, 
+  Node.2 = CN_expression_filtered$Node.2,
+  wTO = CN_expression_filtered$CN, 
+  pval = CN_expression_filtered$pval.fisher, 
+  cutoff = list(kind = 'pval', value = 0.001), 
+  MakeGroups = 'louvain', 
+  layout = 'layout_components', path = 'Vis.html')
+```
+
+
+## Session Info
+
+```{r}
+sessionInfo()
+```
+
