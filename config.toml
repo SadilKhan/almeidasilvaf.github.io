@@ -1,4 +1,4 @@
-baseURL = "/almeidasilvaf.netlify.app"
+baseURL = "/"
 theme = "hugo-apero"
 languageCode = "en"
 title = "Fabrício's personal website"
