@@ -1,0 +1,521 @@
+---
+title: "wTO"
+subtitle: "Computing Weighted Topological Overlaps (wTO) & Consensus wTO
+        Network"
+excerpt: "Computes the Weighted Topological Overlap with positive and negative signs (wTO) networks given a data frame containing the mRNA count/ expression/ abundance per sample, and a vector containing the interested nodes of interaction (a subset of the elements of the full data frame). It also computes the cut-off threshold or p-value based on the individuals bootstrap or the values reshuffle per individual. It also allows the construction of a consensus network, based on multiple wTO networks. The package includes a visualization tool for the networks."
+date: 2018-11-17
+date_end: "2018-11-17"
+show_post_time: false
+event: "CRAN"
+event_url: https://cran.r-project.org/web/packages/wTO/
+author: "Deisy Morselli Gysi"
+draft: false
+# layout options: single, single-sidebar
+layout: single
+categories:
+- r packages
+- co-expression
+- networks
+links:
+- icon: box-open
+  icon_pack: fas
+  name: package
+  url: https://cran.r-project.org/web/packages/wTO/
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="wto-computing-weighted-topological-overlaps-wto-consensus-wto-network" class="section level2">
+<h2>wTO: Computing Weighted Topological Overlaps (wTO) &amp; Consensus wTO Network</h2>
+<p>Computes the Weighted Topological Overlap with positive and negative signs (wTO) networks (Nowick et al. (2009) <a href="doi:10.1073/pnas.0911376106" class="uri">doi:10.1073/pnas.0911376106</a>) given a data frame containing the mRNA count/ expression/ abundance per sample, and a vector containing the interested nodes of interaction (a subset of the elements of the full data frame).</p>
+<p>It also computes the cut-off threshold or p-value based on the individuals bootstrap or the values reshuffle per individual (Gysi et al. 2017 <a href="https://doi.org/10.1186/s12859-018-2351-7" class="uri">https://doi.org/10.1186/s12859-018-2351-7</a>). It also allows the construction of a <strong>consensus network</strong>, based on multiple wTO networks. The package includes a visualization tool for the networks.</p>
+<p>You can download the package from CRAN using:</p>
+<p><code>install.packages('wTO')</code></p>
+<div id="input-data" class="section level3">
+<h3>Input data</h3>
+<p>The <code>wTO</code> package, can be used on any kind of count data, but we highly
+recommend to use normalized and quality controlled data according to the
+data type such as RMA, MD5 for microarray, RPKM, TPM or PKM for RNA-seq,
+sample normalized data for metagenomics.</p>
+<p>As an example, the package contains three data sets, two from microarray
+chips (<code>Microarray_Expression1</code> and <code>Microarray_Expression2</code>), and one
+from abundance in metagenomics (<code>metagenomics_abundance</code>).</p>
+</div>
+<div id="wto" class="section level3">
+<h3>wTO</h3>
+<p>The wTO method is a method for building networks based on pairwise
+correlations normalized and corrected by all shared correlations. For
+this reason, the user can choose a set of factors of interest, called
+here <em>Overlaps</em>, those are the nodes that will be corrected and
+normalized by all other factors in the dataset. Those factors can be
+Transcription Factor, long non coding RNAs, a set of species of interest
+etc.</p>
+</div>
+<div id="genomic-data" class="section level3">
+<h3>Genomic data</h3>
+<p>The <code>wTO</code> package contains 2 data sets that were obtained using
+expression arrays (<code>Microarray_Expression1</code> and
+<code>Microarray_Expression2</code>), they were previously normalized and the
+quality control was done. We will use it to build the wTO network using
+the different methods implemented in the package.</p>
+<p>First we are going to inspect those data sets.</p>
+<pre class="r"><code>require(wTO)</code></pre>
+<pre><code>## Loading required package: wTO</code></pre>
+<pre class="r"><code>require(magrittr)</code></pre>
+<pre><code>## Loading required package: magrittr</code></pre>
+<pre class="r"><code>data(&quot;ExampleGRF&quot;)
+data(&quot;Microarray_Expression1&quot;)
+data(&quot;Microarray_Expression2&quot;)
+
+dim(Microarray_Expression1)</code></pre>
+<pre><code>## [1] 268  18</code></pre>
+<pre class="r"><code>dim(Microarray_Expression2)</code></pre>
+<pre><code>## [1] 268  18</code></pre>
+<pre class="r"><code>Microarray_Expression1[1:5,1:5]</code></pre>
+<pre><code>##               ID1      ID2      ID3      ID4      ID5
+## FAM122B  5.325653 5.039814 5.099828 5.053185 5.213816
+## DEFB108B 2.038747 1.965599 1.925807 1.977435 2.079381
+## CCSER2   4.973347 4.865783 4.818910 5.024392 4.697314
+## GPD2     5.453287 5.595471 5.223886 5.130226 5.370672
+## HECW1    4.350837 4.279759 4.218375 4.472152 4.408025</code></pre>
+<pre class="r"><code>head(ExampleGRF)</code></pre>
+<pre><code>##          x
+## 1    ACAD8
+## 2   ANAPC2
+## 3  ANKRD22
+## 4   ANKRD2
+## 5 ARHGAP35
+## 6    ASH1L</code></pre>
+<p>Please, note that the <strong>individuals are in the columns</strong> and the <strong>gene expressions are in the rows</strong>. Moreover, the <code>row.names()</code> are the names
+of the genes. The list of genes that will be used for measuring the
+interactions are in <code>ExampleGRF</code>. There should always be more than 2 of
+them contained in the expression set. If there are no common nodes to be
+measured, the method will return an error.</p>
+<pre class="r"><code>sum(ExampleGRF$x %in% row.names(Microarray_Expression1))</code></pre>
+<pre><code>## [1] 168</code></pre>
+<div id="running-the-wto" class="section level4">
+<h4>Running the wTO</h4>
+<p>We can run the <code>wTO</code> package with 3 modes. The first one is running the
+wTO without resampling. For that we can use the <code>wTO()</code> . The second
+one, <code>wTO.Complete()</code>, gives you the whole diagnosis plot,
+hard-threshold on the <em>ω</em><sub><em>i</em>, <em>j</em></sub>, the
+<em>ω</em><sub><em>i</em>, <em>j</em></sub>, |<em>ω</em><sub><em>i</em>, <em>j</em></sub>| values and p-values.
+The last mode, <code>wTO.fast()</code>, just returns the <em>ω</em><sub><em>i</em>, <em>j</em></sub>
+values and p-value.</p>
+<div id="using-the-wto-function" class="section level5">
+<h5>Using the <code>wTO()</code> function:</h5>
+<p>To use the <code>wTO()</code> function, the first step is to compute the
+correlation among the nodes of interest using <code>CorrelationOverlap()</code> and
+then use it as input for the <code>wTO()</code>. In the first function the user is
+allowed to choose the method for correlation between Pearson (‘p’) or
+Spearman (‘s’). The second function allows the choice between absolute
+values (‘abs’) or signed values (‘sign’). Please, keep in mind that the
+result of the <code>wTO()</code> function is a matrix, and it can be easily
+converted to an edge list using the function <code>wTO.in.line()</code>.</p>
+<pre class="r"><code>wTO_p_abs = CorrelationOverlap(Data = Microarray_Expression1,
+                               Overlap = ExampleGRF$x, 
+                               method = &#39;p&#39;) %&gt;% 
+  wTO(., sign = &#39;abs&#39;)
+wTO_p_abs[1:5,1:5]</code></pre>
+<pre><code>##         ZNF333 ZNF28 ANKRD22   ZFR TRIM33
+## ZNF333   0.352 0.237   0.269 0.242  0.241
+## ZNF28    0.237 0.287   0.209 0.206  0.239
+## ANKRD22  0.269 0.209   0.299 0.199  0.252
+## ZFR      0.242 0.206   0.199 0.328  0.258
+## TRIM33   0.241 0.239   0.252 0.258  0.361</code></pre>
+<pre class="r"><code>wTO_p_abs %&lt;&gt;% 
+  wTO.in.line()
+
+head(wTO_p_abs)</code></pre>
+<pre><code>##     Node.1  Node.2   wTO
+## 1:  ZNF333   ZNF28 0.237
+## 2:  ZNF333 ANKRD22 0.269
+## 3:   ZNF28 ANKRD22 0.209
+## 4:  ZNF333     ZFR 0.242
+## 5:   ZNF28     ZFR 0.206
+## 6: ANKRD22     ZFR 0.199</code></pre>
+<pre class="r"><code>wTO_s_abs = CorrelationOverlap(Data = Microarray_Expression1, 
+                               Overlap = ExampleGRF$x, 
+                               method = &#39;s&#39;) %&gt;% 
+  wTO(., sign = &#39;abs&#39;) %&gt;% 
+  wTO.in.line()
+head(wTO_s_abs)</code></pre>
+<pre><code>##     Node.1  Node.2   wTO
+## 1:  ZNF333   ZNF28 0.236
+## 2:  ZNF333 ANKRD22 0.258
+## 3:   ZNF28 ANKRD22 0.215
+## 4:  ZNF333     ZFR 0.264
+## 5:   ZNF28     ZFR 0.187
+## 6: ANKRD22     ZFR 0.193</code></pre>
+<pre class="r"><code>wTO_p_sign = CorrelationOverlap(Data = Microarray_Expression1, 
+                                Overlap = ExampleGRF$x, 
+                                method = &#39;p&#39;) %&gt;% 
+  wTO(., sign = &#39;sign&#39;) %&gt;%
+  wTO.in.line()
+head(wTO_p_sign)</code></pre>
+<pre><code>##     Node.1  Node.2    wTO
+## 1:  ZNF333   ZNF28 -0.099
+## 2:  ZNF333 ANKRD22 -0.185
+## 3:   ZNF28 ANKRD22  0.076
+## 4:  ZNF333     ZFR -0.117
+## 5:   ZNF28     ZFR -0.077
+## 6: ANKRD22     ZFR -0.036</code></pre>
+<pre class="r"><code>wTO_s_sign = CorrelationOverlap(Data = Microarray_Expression1,
+                                Overlap = ExampleGRF$x, 
+                                method = &#39;s&#39;) %&gt;%
+  wTO(., sign = &#39;sign&#39;) %&gt;% 
+  wTO.in.line()
+head(wTO_s_sign)</code></pre>
+<pre><code>##     Node.1  Node.2    wTO
+## 1:  ZNF333   ZNF28 -0.064
+## 2:  ZNF333 ANKRD22 -0.143
+## 3:   ZNF28 ANKRD22  0.029
+## 4:  ZNF333     ZFR -0.164
+## 5:   ZNF28     ZFR -0.011
+## 6: ANKRD22     ZFR  0.024</code></pre>
+</div>
+<div id="using-the-wto.complete-function" class="section level5">
+<h5>Using the <code>wTO.Complete()</code> function:</h5>
+<p>The usage of the function <code>wTO.Complete()</code> is straight-forward. No
+plug-in-functions() are necessary. The arguments parsed to the
+<code>wTO.Complete()</code> functions are the number <em>k</em> of threads that should be
+used for computing the <em>ω</em><sub><em>i</em>,<em>j</em></sub>, the amount of
+replications, <em>n</em>, the expression matrix, <em>Data</em>, the <em>Overlapping</em>
+nodes, the correlation <em>method</em> (<strong>Pearson</strong> or <strong>Spearman</strong>) for the
+<em>method_resampling</em> that should be <strong>Bootstrap</strong>, <strong>BlockBootstrap</strong> or
+<strong>Reshuffle</strong>, the p-value correction method, <em>pvalmethod</em> (any from the
+p.adjust.methods), if the correlation should be saved, the <em>δ</em> is the
+expected difference, <em>expected.diff</em>, between the resampled values and
+the <em>ω</em><sub><em>i</em>, <em>j</em></sub> and also if the diagnosis <em>plot</em> should be
+plotted.</p>
+<pre class="r"><code>wTO_s_sign_complete = wTO.Complete(k = 5, 
+                                   n = 250,
+                                   Data = Microarray_Expression1, 
+                                   Overlap = ExampleGRF$x, 
+                                   method = &#39;p&#39;, 
+                                   method_resampling = &#39;Bootstrap&#39;,
+                                   pvalmethod = &#39;BH&#39;, 
+                                   savecor = TRUE, 
+                                   expected.diff = 0.2, 
+                                   plot = TRUE)</code></pre>
+<pre><code>## There are 168 overlapping nodes, 268 total nodes and 18 individuals.</code></pre>
+<pre><code>## This function might take a long time to run. Don&#39;t turn off the computer.</code></pre>
+<pre><code>## Simulations are done.</code></pre>
+<pre><code>## Computing p-values</code></pre>
+<pre><code>## Computing cutoffs</code></pre>
+<pre><code>## Done!</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>The diagnosis plot shows the quality of the resampling (first two
+plots). The closer the purple line to the black line, the better. The
+<em>ω</em><sub><em>i</em>,<em>j</em></sub> vs |<em>ω</em><sub><em>i</em>,<em>j</em></sub>| shows the amount of
+<em>ω</em><sub><em>i</em>, <em>j</em></sub> being affected by cancellations on the heuristics
+of the method, the more similar to a <strong>smile plot</strong>, the better. The
+last two plots show the relashionship between p-values and the
+<em>ω</em><sub><em>i</em>,<em>j</em></sub>. It is expected that higher <em>ω</em>’s presents lower
+p-values.</p>
+<p>The resulting object from the <code>wTO.Complete()</code> function is a list
+containing:
+* wTO an edge list of informations such as the signed and
+unsigned <em>ω</em><sub><em>i</em>,<em>j</em></sub> values its raw and adjusted p-values.
+* Correlation values, also as an edge list
+* Quantiles, the quantiles from the empirical distribution and the calculated <em>ω</em>’s from the
+original data, for both signed and unsigned networks.</p>
+<pre class="r"><code>wTO_s_sign_complete</code></pre>
+<pre><code>## $wTO
+##        Node.1  Node.2 wTO_sign wTO_abs pval_sig pval_abs  Padj_sig   Padj_abs
+##     1: ZNF333   ZNF28   -0.099   0.237    0.152    0.012 0.3472353 0.02018417
+##     2: ZNF333 ANKRD22   -0.185   0.269    0.184    0.004 0.3472353 0.01092311
+##     3: ZNF333     ZFR   -0.117   0.242    0.116    0.016 0.3472353 0.02361368
+##     4: ZNF333  TRIM33    0.007   0.241    0.136    0.008 0.3472353 0.01629268
+##     5: ZNF333   RIMS3   -0.325   0.409    0.140    0.000 0.3472353 0.00000000
+##    ---                                                                       
+## 14024: ANAPC2   SBNO2   -0.147   0.298    0.160    0.000 0.3472353 0.00000000
+## 14025: ANAPC2  ZNF528   -0.142   0.222    0.164    0.004 0.3472353 0.01092311
+## 14026:  TIGD7   SBNO2   -0.297   0.354    0.104    0.000 0.3472353 0.00000000
+## 14027:  TIGD7  ZNF528   -0.099   0.219    0.152    0.020 0.3472353 0.02684014
+## 14028:  SBNO2  ZNF528    0.141   0.311    0.272    0.008 0.3554039 0.01629268
+## 
+## $Correlation
+##          Node.1   Node.2          Cor
+##     1:  FAM122B DEFB108B  0.366857931
+##     2:  FAM122B   CCSER2  0.278870911
+##     3: DEFB108B   CCSER2 -0.252482453
+##     4:  FAM122B     GPD2 -0.005649124
+##     5: DEFB108B     GPD2 -0.107064848
+##    ---                               
+## 35774:   TRIM23   ZNF528  0.054249174
+## 35775:   ZNF559   ZNF528 -0.218309729
+## 35776:   ANAPC2   ZNF528 -0.013821370
+## 35777:    TIGD7   ZNF528  0.011807143
+## 35778:    SBNO2   ZNF528  0.092317502
+## 
+## $Quantiles
+##                         0.1%  2.5%   10%  90% 97.5% 99.9%
+## Empirical.Quantile     -0.56 -0.46 -0.34 0.37  0.49  0.56
+## Quantile               -0.50 -0.40 -0.28 0.32  0.43  0.52
+## Empirical.Quantile.abs  0.21  0.24  0.27 0.47  0.52  0.56
+## Quantile.abs            0.18  0.19  0.21 0.41  0.47  0.53
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;wTO&quot;  &quot;list&quot;</code></pre>
+</div>
+<div id="using-the-wto.fast-function" class="section level5">
+<h5>Using the <code>wTO.fast()</code> function:</h5>
+<p>The <code>wTO.fast()</code> function is a simplified verion of the <code>wTO.Complete()</code>
+function, that doesn’t return diagnosis, correlation, nor the quantiles,
+but allows the user to choose the method for correlation, the sign of
+the <em>ω</em> to be calculated and the resampling method should be one of the
+two <strong>Bootrastap</strong> or <strong>BlockBootstrap</strong>. The p-values are the raw
+p-values and if the user desires to calculate its correction it can be
+easily done as shown above.</p>
+<pre class="r"><code>fast_example = wTO.fast(Data = Microarray_Expression1, 
+                        Overlap = ExampleGRF$x, 
+                        method = &#39;s&#39;, 
+                        sign = &#39;sign&#39;, 
+                        delta = 0.2,
+                        n = 250, 
+                        method_resampling = &#39;Bootstrap&#39;)</code></pre>
+<pre><code>## There are 168 overlapping nodes, 268 total nodes and 18 individuals.</code></pre>
+<pre><code>## This function might take a long time to run. Don&#39;t turn off the computer.</code></pre>
+<pre><code>##  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  16  17  18  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51  52  53  54  55  56  57  58  59  60  61  62  63  64  65  66  67  68  69  70  71  72  73  74  75  76  77  78  79  80  81  82  83  84  85  86  87  88  89  90  91  92  93  94  95  96  97  98  99  100  101  102  103  104  105  106  107  108  109  110  111  112  113  114  115  116  117  118  119  120  121  122  123  124  125  126  127  128  129  130  131  132  133  134  135  136  137  138  139  140  141  142  143  144  145  146  147  148  149  150  151  152  153  154  155  156  157  158  159  160  161  162  163  164  165  166  167  168  169  170  171  172  173  174  175  176  177  178  179  180  181  182  183  184  185  186  187  188  189  190  191  192  193  194  195  196  197  198  199  200  201  202  203  204  205  206  207  208  209  210  211  212  213  214  215  216  217  218  219  220  221  222  223  224  225  226  227  228  229  230  231  232  233  234  235  236  237  238  239  240  241  242  243  244  245  246  247  248  249  250 Done!</code></pre>
+<pre class="r"><code>head(fast_example)</code></pre>
+<pre><code>##     Node.1  Node.2    wTO  pval  pval.adj
+## 1:  ZNF333   ZNF28 -0.064 0.272 0.4363894
+## 2:  ZNF333 ANKRD22 -0.143 0.308 0.4363894
+## 3:   ZNF28 ANKRD22  0.029 0.224 0.4363894
+## 4:  ZNF333     ZFR -0.164 0.200 0.4363894
+## 5:   ZNF28     ZFR -0.011 0.336 0.4363894
+## 6: ANKRD22     ZFR  0.024 0.284 0.4363894</code></pre>
+<pre class="r"><code>fast_example$adj.pval = p.adjust(fast_example$pval)</code></pre>
+</div>
+</div>
+</div>
+<div id="metagenomic-data" class="section level3">
+<h3>Metagenomic data</h3>
+<p>Along with the expression data, the <code>wTO</code> package also includes a
+metagenomics dataset that is the abundance of some OTU’s in bacterias
+collected since 1997. More about this data can be found at
+<span class="math display">\[&lt;https://www.ebi.ac.uk/metagenomics/projects/ERP013549&gt;\]</span>.</p>
+<p>The OTU (Operational Taxonomic Units) contains the taxonomy of the
+particular OTU and from Week1 to Week98, the abundance of that
+particular OTU in that week.</p>
+<pre class="r"><code>data(&quot;metagenomics_abundance&quot;)
+metagenomics_abundance[2:10, 1:10]</code></pre>
+<pre><code>##                                                                                                            OTU
+## 2                            Root;k__Archaea;p__Euryarchaeota;c__Thermoplasmata;o__E2;f__MarinegroupII;g__;s__
+## 3                   Root;k__Bacteria;p__Actinobacteria;c__Acidimicrobiia;o__Acidimicrobiales;f__OCS155;g__;s__
+## 4         Root;k__Bacteria;p__Actinobacteria;c__Actinobacteria;o__Actinomycetales;f__Microbacteriaceae;g__;s__
+## 5                  Root;k__Bacteria;p__Bacteroidetes;c__Cytophagia;o__Cytophagales;f__Flammeovirgaceae;g__;s__
+## 6            Root;k__Bacteria;p__Bacteroidetes;c__Cytophagia;o__Cytophagales;f__Flammeovirgaceae;g__JTB248;s__
+## 7                          Root;k__Bacteria;p__Bacteroidetes;c__Flavobacteriia;o__Flavobacteriales;f__;g__;s__
+## 8            Root;k__Bacteria;p__Bacteroidetes;c__Flavobacteriia;o__Flavobacteriales;f__Cryomorphaceae;g__;s__
+## 9  Root;k__Bacteria;p__Bacteroidetes;c__Flavobacteriia;o__Flavobacteriales;f__Cryomorphaceae;g__Fluviicola;s__
+## 10        Root;k__Bacteria;p__Bacteroidetes;c__Flavobacteriia;o__Flavobacteriales;f__Flavobacteriaceae;g__;s__
+##    Week1 Week2 Week3 Week4 Week5 Week6 Week7 Week8 Week9
+## 2      1     6     0     0     0     1     0     1     0
+## 3      0     0     0     0     0     0     0     5     0
+## 4      0     0     0     0     0     0     0     0     0
+## 5      0     1     0     0     0     0     0     0     0
+## 6      0     0     0     0     0     0     0     0     0
+## 7      0     1     0     0     0     0     0     1     0
+## 8      0     0     0     0     0     0     0     1     0
+## 9      0     0     0     0     0     0     0     1     0
+## 10     0     1     0     0     0     0     0     7     0</code></pre>
+<p>Before we are able to define the network, we have first to understand
+the patterns of autocorrelation of each species, and then define the
+lag, that will be used for the <strong>BlockBootstrap</strong> resampling in the
+<code>wTO.Complete()</code> or <code>fast.wTO()</code> functions. To define the lag, we use
+autocorrelation function <code>acf()</code>.</p>
+<pre class="r"><code>row.names(metagenomics_abundance) = metagenomics_abundance$OTU
+metagenomics_abundance = metagenomics_abundance[,-1]
+par(mfrow = c(3,3))
+for ( i in 1:nrow(metagenomics_abundance)){
+  acf(t(metagenomics_abundance[i,]))
+}</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-2.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-3.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-4.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-5.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-6.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-7.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-8.png" width="672" /></p>
+<p>Because most of them have only a high autocorrelation with itself or
+maximum 2 weeks, we will use a lag of 2 for the blocks used in the
+bootstrap.</p>
+<p>The functions <code>wTO.fast()</code> and <code>wTO.Complete()</code> are able to accomodate
+the lag parameter, therefore, they will be used here.</p>
+<pre class="r"><code>Meta_fast = wTO.fast(Data = metagenomics_abundance, 
+                     Overlap = row.names(metagenomics_abundance), 
+                     method = &#39;p&#39;, 
+                     sign = &#39;sign&#39;, 
+                     n = 250, 
+                     method_resampling = &#39;BlockBootstrap&#39;, 
+                     lag = 2)</code></pre>
+<pre><code>## There are 67 overlapping nodes, 67 total nodes and 98 individuals.</code></pre>
+<pre><code>## This function might take a long time to run. Don&#39;t turn off the computer.</code></pre>
+<pre><code>##  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  16  17  18  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51  52  53  54  55  56  57  58  59  60  61  62  63  64  65  66  67  68  69  70  71  72  73  74  75  76  77  78  79  80  81  82  83  84  85  86  87  88  89  90  91  92  93  94  95  96  97  98  99  100  101  102  103  104  105  106  107  108  109  110  111  112  113  114  115  116  117  118  119  120  121  122  123  124  125  126  127  128  129  130  131  132  133  134  135  136  137  138  139  140  141  142  143  144  145  146  147  148  149  150  151  152  153  154  155  156  157  158  159  160  161  162  163  164  165  166  167  168  169  170  171  172  173  174  175  176  177  178  179  180  181  182  183  184  185  186  187  188  189  190  191  192  193  194  195  196  197  198  199  200  201  202  203  204  205  206  207  208  209  210  211  212  213  214  215  216  217  218  219  220  221  222  223  224  225  226  227  228  229  230  231  232  233  234  235  236  237  238  239  240  241  242  243  244  245  246  247  248  249  250 Done!</code></pre>
+<pre class="r"><code>Meta_Complete = wTO.Complete(k = 1, 
+                             n = 250, 
+                             Data = metagenomics_abundance, 
+                             Overlap = row.names(metagenomics_abundance),
+                             method = &#39;s&#39; , 
+                             method_resampling = &#39;BlockBootstrap&#39;, 
+                             lag = 2 )</code></pre>
+<pre><code>## There are 67 overlapping nodes, 67 total nodes and 98 individuals.
+## This function might take a long time to run. Don&#39;t turn off the computer.
+## Simulations are done.
+## Computing p-values
+## Computing cutoffs
+## Done!</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+</div>
+</div>
+<div id="consensus-network" class="section level2">
+<h2>Consensus Network</h2>
+<p>From the expression data-sets, we are able to draw a Consensus Network.
+For that, the function <code>wTO.Consensus()</code> can be used. This function
+works in a special way, that the user should pass a list of data.frames
+containing the Nodes names and the wTO and p-values. We show an example
+above.</p>
+<p>Let’s calculate the networks the same way we did in the Section <a href="#genomic-data">Genomic
+data</a>.</p>
+<pre class="r"><code>wTO_Data1 = wTO.fast(Data = Microarray_Expression1, 
+                     Overlap = ExampleGRF$x, 
+                     method = &#39;p&#39;, 
+                     n = 250)</code></pre>
+<pre><code>## There are 168 overlapping nodes, 268 total nodes and 18 individuals.</code></pre>
+<pre><code>## This function might take a long time to run. Don&#39;t turn off the computer.</code></pre>
+<pre><code>##  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  16  17  18  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51  52  53  54  55  56  57  58  59  60  61  62  63  64  65  66  67  68  69  70  71  72  73  74  75  76  77  78  79  80  81  82  83  84  85  86  87  88  89  90  91  92  93  94  95  96  97  98  99  100  101  102  103  104  105  106  107  108  109  110  111  112  113  114  115  116  117  118  119  120  121  122  123  124  125  126  127  128  129  130  131  132  133  134  135  136  137  138  139  140  141  142  143  144  145  146  147  148  149  150  151  152  153  154  155  156  157  158  159  160  161  162  163  164  165  166  167  168  169  170  171  172  173  174  175  176  177  178  179  180  181  182  183  184  185  186  187  188  189  190  191  192  193  194  195  196  197  198  199  200  201  202  203  204  205  206  207  208  209  210  211  212  213  214  215  216  217  218  219  220  221  222  223  224  225  226  227  228  229  230  231  232  233  234  235  236  237  238  239  240  241  242  243  244  245  246  247  248  249  250 Done!</code></pre>
+<pre class="r"><code>wTO_Data2 = wTO.fast(Data = Microarray_Expression2, 
+                     Overlap = ExampleGRF$x, 
+                     method = &#39;p&#39;, 
+                     n = 250)</code></pre>
+<pre><code>## There are 168 overlapping nodes, 268 total nodes and 18 individuals.
+## This function might take a long time to run. Don&#39;t turn off the computer.
+##  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  16  17  18  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51  52  53  54  55  56  57  58  59  60  61  62  63  64  65  66  67  68  69  70  71  72  73  74  75  76  77  78  79  80  81  82  83  84  85  86  87  88  89  90  91  92  93  94  95  96  97  98  99  100  101  102  103  104  105  106  107  108  109  110  111  112  113  114  115  116  117  118  119  120  121  122  123  124  125  126  127  128  129  130  131  132  133  134  135  136  137  138  139  140  141  142  143  144  145  146  147  148  149  150  151  152  153  154  155  156  157  158  159  160  161  162  163  164  165  166  167  168  169  170  171  172  173  174  175  176  177  178  179  180  181  182  183  184  185  186  187  188  189  190  191  192  193  194  195  196  197  198  199  200  201  202  203  204  205  206  207  208  209  210  211  212  213  214  215  216  217  218  219  220  221  222  223  224  225  226  227  228  229  230  231  232  233  234  235  236  237  238  239  240  241  242  243  244  245  246  247  248  249  250 Done!</code></pre>
+<p>Now, let’s combine both networks in one Consensus Network.</p>
+<pre class="r"><code>CN_expression = wTO.Consensus(data = list (wTO_Data1 = data.frame
+                                           (Node.1 = wTO_Data1$Node.1, 
+                                             Node.2 = wTO_Data1$Node.2, 
+                                             wTO = wTO_Data1$wTO,
+                                             pval = wTO_Data1$pval)
+                                           , wTO_Data2C = data.frame
+                                           (Node.1 = wTO_Data2$Node.1, 
+                                             Node.2 = wTO_Data2$Node.2, 
+                                             wTO = wTO_Data2$wTO,
+                                             pval = wTO_Data2$pval)))</code></pre>
+<pre><code>## Joining by: Node.1, Node.2
+## Joining by: Node.1, Node.2</code></pre>
+<pre><code>## Joining by: ID</code></pre>
+<pre><code>## Total common nodes: 168</code></pre>
+<p>Or using the <code>wTO.Complete()</code>:</p>
+<pre class="r"><code>wTO_Data1C = wTO.Complete(Data = Microarray_Expression1, 
+                          Overlap = ExampleGRF$x, 
+                          method = &#39;p&#39;, 
+                          n = 250, 
+                          k = 5)</code></pre>
+<pre><code>## There are 168 overlapping nodes, 268 total nodes and 18 individuals.</code></pre>
+<pre><code>## This function might take a long time to run. Don&#39;t turn off the computer.</code></pre>
+<pre><code>## Simulations are done.</code></pre>
+<pre><code>## Computing p-values</code></pre>
+<pre><code>## Computing cutoffs</code></pre>
+<pre><code>## Done!</code></pre>
+<pre class="r"><code>wTO_Data2C = wTO.Complete(Data = Microarray_Expression2, 
+                          Overlap = ExampleGRF$x, 
+                          method = &#39;p&#39;, 
+                          n = 250, 
+                          k = 5)</code></pre>
+<pre><code>## There are 168 overlapping nodes, 268 total nodes and 18 individuals.</code></pre>
+<pre><code>## This function might take a long time to run. Don&#39;t turn off the computer.</code></pre>
+<pre><code>## Simulations are done.</code></pre>
+<pre><code>## Computing p-values</code></pre>
+<pre><code>## Computing cutoffs</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<pre><code>## Done!</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-2.png" width="672" /></p>
+<p>Now, let’s combine both networks in one Consensus Network.</p>
+<pre class="r"><code>CN_expression = wTO.Consensus(data = list (wTO_Data1C = data.frame
+                                           (Node.1 = wTO_Data1C$wTO$Node.1, 
+                                             Node.2 = wTO_Data1C$wTO$Node.2, 
+                                             wTO = wTO_Data1C$wTO$wTO_sign,
+                                             pval = wTO_Data1C$wTO$pval_sig), wTO_Data2C = data.frame
+                                           (Node.1 = wTO_Data2C$wTO$Node.1, 
+                                             Node.2 = wTO_Data2C$wTO$Node.2, 
+                                             wTO = wTO_Data2C$wTO$wTO_sign,
+                                             pval = wTO_Data2C$wTO$pval_sig)))</code></pre>
+<pre><code>## Joining by: Node.1, Node.2
+## Joining by: Node.1, Node.2</code></pre>
+<pre><code>## Joining by: ID</code></pre>
+<pre><code>## Total common nodes: 168</code></pre>
+<pre class="r"><code>head(CN_expression)</code></pre>
+<pre><code>##   Node.1  Node.2         CN pval.fisher
+## 1 ZNF333   ZNF28 -0.1191288  0.08584314
+## 2 ZNF333 ANKRD22 -0.1400000  0.11936952
+## 3 ZNF333     ZFR -0.1091659  0.09698604
+## 4 ZNF333  TRIM33 -0.0240000  0.06464921
+## 5 ZNF333   RIMS3 -0.2798101  0.09711171
+## 6 ZNF333  ZNF595  0.1542850  0.12426164</code></pre>
+</div>
+<div id="visualization" class="section level2">
+<h2>Visualization</h2>
+<p>The <code>wTO</code> package also includes an interactive visualization tool that
+can be used to inspect the results of the wTO netwoks or Consensus
+Network.</p>
+<p>The arguments given to this function are the Nodes names, its wTO and
+p-values. Optionals are the cutoffs that can be applied to the p-value
+or to the wTO value. We highly reccomend using both by subseting the
+data previous to the visualization. The layout of the network can be
+also chosen from a variety that are implemented in igraph package, for
+the the Make_Cluster argument many clustering algorithms that are
+implemented in igraph can be used. The final graph can be exported as an
+<code>html</code> or as <code>png</code>.</p>
+<pre class="r"><code>Visualization = NetVis(Node.1 = CN_expression$Node.1, 
+                       Node.2 = CN_expression$Node.2,
+                       wTO = CN_expression$CN, 
+                       pval = CN_expression$pval.fisher, 
+                       cutoff = list(kind = &#39;pval&#39;, value = 0.001),
+                       MakeGroups = &#39;louvain&#39;, 
+                       layout = &#39;layout_components&#39;)</code></pre>
+<pre><code>## Joining by: id</code></pre>
+<pre class="r"><code>CN_expression_filtered = subset(CN_expression, 
+                                abs(CN_expression$CN)&gt; 0.4 &amp;
+                                  CN_expression$pval.fisher &lt; 0.0001)
+
+dim(CN_expression_filtered)</code></pre>
+<pre><code>## [1] 50  4</code></pre>
+<pre class="r"><code>Visualization2 = NetVis(
+  Node.1 = CN_expression_filtered$Node.1, 
+  Node.2 = CN_expression_filtered$Node.2,
+  wTO = CN_expression_filtered$CN, 
+  pval = CN_expression_filtered$pval.fisher, 
+  cutoff = list(kind = &#39;pval&#39;, value = 0.001), 
+  MakeGroups = &#39;louvain&#39;, 
+  layout = &#39;layout_components&#39;, path = &#39;Vis.html&#39;)</code></pre>
+<pre><code>## Joining by: id</code></pre>
+<pre><code>## Vis.html</code></pre>
+</div>
+<div id="session-info" class="section level2">
+<h2>Session Info</h2>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>## R version 4.1.0 (2021-05-18)
+## Platform: x86_64-apple-darwin17.0 (64-bit)
+## Running under: macOS Big Sur 10.16
+## 
+## Matrix products: default
+## BLAS:   /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRblas.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRlapack.dylib
+## 
+## locale:
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] magrittr_2.0.1 wTO_1.6.3     
+## 
+## loaded via a namespace (and not attached):
+##  [1] igraph_1.2.6      Rcpp_1.0.6        knitr_1.33        som_0.3-5.1      
+##  [5] R6_2.5.0          rlang_0.4.11      highr_0.9         stringr_1.4.0    
+##  [9] plyr_1.8.6        visNetwork_2.0.9  tools_4.1.0       parallel_4.1.0   
+## [13] data.table_1.14.0 xfun_0.23         jquerylib_0.1.4   htmltools_0.5.1.1
+## [17] yaml_2.2.1        digest_0.6.27     bookdown_0.22     reshape2_1.4.4   
+## [21] htmlwidgets_1.5.3 sass_0.4.0        evaluate_0.14     rmarkdown_2.8.5  
+## [25] blogdown_1.3      stringi_1.6.2     compiler_4.1.0    bslib_0.2.5.1    
+## [29] jsonlite_1.7.2    pkgconfig_2.0.3</code></pre>
+</div>

@@ -1,0 +1,82 @@
+// color variables based on tachyons classes
+// set default color options
+
+$siteBgColor: "black" ;
+$sidebarBgColor: "light-gray" ;
+$textColor: "near-black" ;
+$sidebarTextColor: "dark-gray" ;
+$headlineColor: "black" ;
+$headingColor: "near-black" ;
+$bodyLinkColor: "blue" ;
+$navLinkColor: "near-black" ;
+$navBgColor: "near-black" ;
+$sidebarLinkColor: "near-black" ;
+$footerTextColor: "silver" ;
+$buttonTextColor: "near-white" ;
+$buttonBgColor: "black" ;
+$buttonHoverTextColor: "white" ;
+$buttonHoverBgColor: "blue" ;
+$borderColor: "moon-gray" ;
+
+
+$siteBgColorDark: "black" ;
+$sidebarBgColorDark: "light-gray" ;
+$textColorDark: "near-black" ;
+$sidebarTextColorDark: "dark-gray" ;
+$headlineColorDark: "black" ;
+$headingColorDark: "near-black" ;
+$bodyLinkColorDark: "blue" ;
+$navLinkColorDark: "near-black" ;
+$navBgColorDark: "near-black" ;
+$sidebarLinkColorDark: "near-black" ;
+$footerTextColorDark: "silver" ;
+$buttonTextColorDark: "near-white" ;
+$buttonBgColorDark: "black" ;
+$buttonHoverTextColorDark: "white" ;
+$buttonHoverBgColorDark: "blue" ;
+$borderColorDark: "moon-gray" ;
+
+#particles-js {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: url("");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 50% 50%;
+} /* ---- stats.js ---- */
+.count-particles {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  width: 80px;
+  color: #13e8e9;
+  font-size: 0.8em;
+  text-align: left;
+  text-indent: 4px;
+  line-height: 14px;
+  padding-bottom: 2px;
+}
+.js-count-particles {
+  font-size: 1.1em;
+}
+#stats,
+.count-particles {
+  -webkit-user-select: none;
+  margin-top: 5px;
+  margin-left: 5px;
+}
+#stats {
+  border-radius: 3px 3px 0 0;
+  overflow: hidden;
+}
+.count-particles {
+  border-radius: 0 0 3px 3px;
+}
+
+code.has-jax {
+    -webkit-font-smoothing: antialiased;
+    background: inherit !important;
+    border: none !important;
+    font-size: 100%;
+}

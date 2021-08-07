@@ -1,0 +1,213 @@
+---
+title: "CoDiNA"
+subtitle: "Co-Expression Differential Network Analysis"
+excerpt: "Categorize links and nodes from multiple networks in 3 categories: Common links (alpha) specific links (gamma), and different links (beta). Also categorizes the links into sub-categories and groups. The package includes a visualization tool for the networks. More information about the methodology can be found at <https://doi.org/10.1371/journal.pone.0240523>"
+date: 2020-07-15
+date_end: "2020-07-15"
+author: "Deisy Morselli Gysi"
+location: "CRAN"
+draft: false
+# layout options: single, single-sidebar
+layout: single
+categories:
+- r packages
+- co-expression
+- networks
+- network comparisson
+links:
+- icon: box-open
+  icon_pack: fas
+  name: package
+  url: https://cran.r-project.org/web/packages/CoDiNA/
+---
+
+
+The usage of the Co-expression Differential Network analysis has been growing by the Biological and Medical science for the analysis of complex systems or diseases. We have developed a method that is able to compare as many networks as desired, by caracterizing both links and nodes that are common, different or specific to each network. More information can be found at <https://doi.org/10.1371/journal.pone.0240523>.
+
+You can download the package from CRAN using:
+
+```
+install.packages('CoDiNA')
+```
+
+
+
+### Input data
+
+
+The input data for CoDiNA is a list of data.frame, containing: `Node.1`,
+`Node.2` and `value`. It is important to mention here that the
+methodology should be employed only for **undirected graphs**. The
+`value` is the strength of the link between `Node.1` and `Node.2` and
+must any real number between -1 to 1. This value can be re-normalized by
+the package using the argument `stretch = TRUE` (by default the values
+are normalized).
+
+As an example, the `CoDiNA` package contains 4 datasets from a Cancer
+study, GSE4290 (Sun et al. (2006)). Each one of this datasets was
+previously normalized, the control quality was done for the genes and
+the networks were calculate using the `wTO` package (Morselli Gysi et
+al. (2017); Morselli Gysi et al. (2017)). Each dataset consists of the
+Gene names and the weight only for the significative interactions and
+filtered for a wTO value of |0.3|.
+
+### Using the wTO output for CoDiNA
+
+The output from the `wTO` package can be easily used as input for
+`CoDiNA`.
+
+```{r}
+require(wTO)
+require(CoDiNA)
+require(magrittr)
+
+wTO_out = wTO.fast(Data = Microarray_Expression1, 
+                   n = 100)
+wTO_filtered = subset(wTO_out, 
+                      p.adjust(wTO_out$pval) < 0.05, 
+                      select = c('Node.1', 'Node.2', 'wTO'))
+```
+
+
+
+### Creating the Differential Network
+
+
+To generate the differential network one can use the `MakeDiffNet()`
+function.
+
+This function will return the *Φ* and *Φ̃* classification for each one of
+the links. Connections that are assigned to *α* (a) are in agreement in
+all networks and it means that all networks possess that particular link
+with the same sign. Links classified as *β* (b) are the ones that also
+exist in all networks but at least one network contains it with a
+different sign. The category *γ* (g) contains links that does not exist
+in all networks, meaning that they are specific to at least one network.
+
+This function also assigns the link into a sub-category. It is important
+mainly for the *β* and *γ* links to understand its differences or
+specificities. It is important to note that **the first network is
+considered to be the reference for *β* links**.
+
+The output from this function is a data.frame containing the nodes, the
+original weights (or normalized), the Phi and Phi\_tilde categories, a
+Group, which describes the sign or absence of the link, the
+Score\_center (raw score), Score\_Phi (normalized score by *Φ*),
+Score\_Phi\_tilde (normalized score by *Φ̃*), Score\_internal (score of
+the link to its theoretical category). The first 3 scores, should be
+closer to 1, while for the last one, the closer to 0 the better.
+
+```{r}
+DiffNet = MakeDiffNet(Data = list(CTR, OLI, AST),
+                      Code = c('CTR', 'OLI', 'AST'))
+
+DiffNet
+print(DiffNet) %>% 
+  head()
+```
+
+
+
+
+
+
+### Clustering the nodes into *Φ* and *Φ̃* categories
+
+Because exclusively the information about the links is not enough to
+define a network, it is necessary to define the nodes accordingly to its
+*Φ* and *Φ̃* categories. To do so, the function `ClusterNodes()` can be
+used. The input for this function is `DiffNet`, that is the output from
+the `MakeDiffNet()`, besides the external and internal cutoffs. The
+external cutoff is applied to the normalized *Φ̃* Score, while the
+internal cutoff is applied to the internal Score.
+
+The suggested values for the internal and external cutoffs are the
+median or the first and third quantiles of the internal and *Φ̃* scores,
+depending on how conservative the network should be.
+
+Using the median:
+
+```{r}
+int_C = quantile(DiffNet$Score_internal, 0.5)
+ext_C = quantile(DiffNet$Score_Phi, 0.5)
+
+Nodes_Groups = ClusterNodes(DiffNet = DiffNet, 
+                            cutoff.external = ext_C, 
+                            cutoff.internal = int_C)
+table(Nodes_Groups$Phi_tilde)
+```
+
+
+Using the first and third quantile:
+```{r}
+
+int_C = quantile(DiffNet$Score_internal, 0.25)
+ext_C = quantile(DiffNet$Score_Phi, 0.75)
+
+Nodes_Groups = ClusterNodes(DiffNet = DiffNet, 
+                            cutoff.external = ext_C, 
+                            cutoff.internal = int_C)
+table(Nodes_Groups$Phi_tilde)
+```
+
+
+### Plotting the network
+
+The visualization of the final network can be quickly done with `plot`.
+The layout of the network can be also determined from a variety that is
+implemented in igraph package, the `Make_Cluster` argument allows the
+nodes to be clusterized according to many clustering algorithms that are
+implemented in igraph can be used. The final graph can be exported as an
+`HTML` or as `png`. The argument `path` saves the network in the given
+path.
+
+The plot returns the nodes and its information.
+
+```{r}
+int_C = quantile(DiffNet$Score_internal, 0.25)
+ext_C = quantile(DiffNet$Score_Phi, 0.75)
+
+Graph = plot(DiffNet, 
+             cutoff.external = ext_C, 
+             cutoff.internal = int_C, 
+             layout = 'layout_components', 
+             path = 'Vis.html')
+```
+
+
+The graph can also be exported as an igraph object, that can be further
+plotted.
+
+
+```{r}
+g = as.igraph(Graph) 
+
+require(igraph)
+
+plot(g, 
+     layout = layout.fruchterman.reingold(g), 
+     vertex.label = NA)
+
+```
+
+## Session Info
+
+```{r}
+sessionInfo()
+```
+
+
+## References
+
+
+Morselli Gysi, Deisy, Andre Voigt, Tiago de Miranda Fragoso, Eivind
+Almaas, and Katja Nowick. 2017. *wTO: Computing Weighted Topological
+Overlaps (wTO) & Consensus wTO Network*.
+<https://CRAN.R-project.org/package=wTO>.
+
+Gysi, D. M., Fragoso, T.M, Zebardast, F., Beroli, W., Busskamp, V.,  Almaas, E., Nowick, K. (2018). Whole transcriptomic network analysis using Co-expression Differential Network Analysis (CoDiNA). Plos One, https://doi.org/10.1371/journal.pone.0240523
+
+Sun, Lixin, Ai-Min Hui, Qin Su, Alexander Vortmeyer, Yuri Kotliarov,
+Sandra Pastorino, Antonino Passaniti, et al. 2006. “Neuronal and
+Glioma-Derived Stem Cell Factor Induces Angiogenesis Within the Brain.”
+*Cancer Cell* 9 (4). Elsevier: 287–300.

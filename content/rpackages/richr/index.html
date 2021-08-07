@@ -1,0 +1,91 @@
+---
+title: "RichR"
+subtitle: "Enrichment for Diseases in a Set of Genes"
+excerpt: "It provides a list of genes associated to diseases (g2d$clean and g2d$complete) based on the following  4 publications (GS2D, Fontaine (2016) <doi:10.18547/gcb.2016.vol2.iss1.e33>, DisGeNET, Pinero (2016) <doi:10.1093/nar/gkw943> Berto2016, Berto (2016) <doi:10.3389/fgene.2016.00031> and  PsyGeNET, Sacristan (2015) <doi:10.1093/bioinformatics/btv301>). Those lists were combined and manually curated to have matching disease names.  When provided a list of gene names, it calculates the disease enrichment of the gene set. The enrichment is calculated using proportion test and Fisher's exact test. Adjusted fdr p-values are returned alongside with p-values combined using the Fisher's method."
+date: 2019-02-13
+date_end: "2019-02-13"
+author: "Deisy Morselli Gysi"
+location: "CRAN"
+draft: false
+# layout options: single, single-sidebar
+layout: single
+categories:
+- r packages
+- gene enrichment
+- disease association
+links:
+- icon: box-open
+  icon_pack: fas
+  name: package
+  url: https://cran.r-project.org/web/packages/RichR/
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>It provides a list of genes associated to diseases (<code>g2d$clean</code> and <code>g2d$complete</code>) based on the following 4 publications (GS2D, Fontaine (2016) [<a href="doi:10.18547/gcb.2016.vol2.iss1.e33" class="uri">doi:10.18547/gcb.2016.vol2.iss1.e33</a>], DisGeNET, Pinero (2016) [<a href="doi:10.1093/nar/gkw943" class="uri">doi:10.1093/nar/gkw943</a>] Berto2016, Berto (2016) [<a href="doi:10.3389/fgene.2016.00031" class="uri">doi:10.3389/fgene.2016.00031</a>] and PsyGeNET, Sacristan (2015) [<a href="doi:10.1093/bioinformatics/btv301" class="uri">doi:10.1093/bioinformatics/btv301</a>]). Those lists were combined and manually curated to have matching disease names. When provided a list of gene names, it calculates the disease enrichment of the gene set. The enrichment is calculated using proportion test and Fisher’s exact test. Adjusted fdr p-values are returned alongside with p-values combined using the Fisher’s method.</p>
+<p>You can download the package from CRAN using:</p>
+<p><code>install.packages('RichR')</code></p>
+<div id="input-data" class="section level2">
+<h2>Input data</h2>
+<p>The input data for RichR are: the Background, that is the list of genes to be used as background control, the Genes2Dis, a data.frame containing genes and association to phenotypes and disorders and Genes, a vector of genes that should be tested for enrichment.</p>
+<p>We recommend using <code>g2d$clean</code> as Genes2Dis. This is a manually curated list of genes and association to disorders.</p>
+<p>Usage</p>
+<pre class="r"><code>require(RichR)</code></pre>
+<pre><code>## Loading required package: RichR</code></pre>
+<pre class="r"><code>data(&#39;g2d&#39;)
+
+g2d_clean = g2d$clean</code></pre>
+<p>The user can choose a particular disorder, or use the whole disease set to compare to</p>
+<pre class="r"><code>g2d_ASD = subset(g2d_clean, 
+                 g2d_clean$Disease %in% c(&#39;AUTISM&#39;))
+
+Enrichment(Background = g2d_clean$Gene.symbol,
+           Genes2Dis = g2d_ASD,
+           Genes = g2d_ASD$Gene.symbol[1:100])</code></pre>
+<pre><code>## Warning in prop.test(.): Chi-squared approximation may be incorrect</code></pre>
+<pre><code>## Warning in metap::sumlog(x): Some studies omitted</code></pre>
+<pre><code>##   Disease Gene.symbol OBS        Fisher Prop     FisherAdj PropAdj
+## 1  AUTISM         627 100 8.768203e-132    0 8.768203e-132       0
+##          weight
+## 1 4.647789e-260</code></pre>
+</div>
+<div id="session-info" class="section level2">
+<h2>Session Info</h2>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>## R version 4.1.0 (2021-05-18)
+## Platform: x86_64-apple-darwin17.0 (64-bit)
+## Running under: macOS Big Sur 10.16
+## 
+## Matrix products: default
+## BLAS:   /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRblas.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRlapack.dylib
+## 
+## locale:
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] RichR_1.0.0
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_1.0.6          plyr_1.8.6          mathjaxr_1.4-0     
+##  [4] bslib_0.2.5.1       compiler_4.1.0      jquerylib_0.1.4    
+##  [7] tools_4.1.0         digest_0.6.27       jsonlite_1.7.2     
+## [10] evaluate_0.14       lattice_0.20-44     rlang_0.4.11       
+## [13] Matrix_1.3-4        parallel_4.1.0      yaml_2.2.1         
+## [16] mvtnorm_1.1-1       blogdown_1.3        xfun_0.23          
+## [19] metap_1.4           stringr_1.4.0       knitr_1.33         
+## [22] sass_0.4.0          multtest_2.48.0     stats4_4.1.0       
+## [25] grid_4.1.0          Biobase_2.52.0      R6_2.5.0           
+## [28] plotrix_3.8-1       Rdpack_2.1.2        survival_3.2-11    
+## [31] rmarkdown_2.8.5     sn_2.0.0            bookdown_0.22      
+## [34] multcomp_1.4-17     TH.data_1.0-10      reshape2_1.4.4     
+## [37] TFisher_0.2.0       magrittr_2.0.1      BiocGenerics_0.38.0
+## [40] codetools_0.2-18    MASS_7.3-54         htmltools_0.5.1.1  
+## [43] rbibutils_2.2       mutoss_0.1-12       splines_4.1.0      
+## [46] mnormt_2.0.2        numDeriv_2016.8-1.1 sandwich_3.0-1     
+## [49] stringi_1.6.2       tmvnsim_1.0-2       zoo_1.8-9</code></pre>
+</div>

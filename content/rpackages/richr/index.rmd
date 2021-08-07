@@ -1,0 +1,66 @@
+---
+title: "RichR"
+subtitle: "Enrichment for Diseases in a Set of Genes"
+excerpt: "It provides a list of genes associated to diseases (g2d$clean and g2d$complete) based on the following  4 publications (GS2D, Fontaine (2016) <doi:10.18547/gcb.2016.vol2.iss1.e33>, DisGeNET, Pinero (2016) <doi:10.1093/nar/gkw943> Berto2016, Berto (2016) <doi:10.3389/fgene.2016.00031> and  PsyGeNET, Sacristan (2015) <doi:10.1093/bioinformatics/btv301>). Those lists were combined and manually curated to have matching disease names.  When provided a list of gene names, it calculates the disease enrichment of the gene set. The enrichment is calculated using proportion test and Fisher's exact test. Adjusted fdr p-values are returned alongside with p-values combined using the Fisher's method."
+date: 2019-02-13
+date_end: "2019-02-13"
+author: "Deisy Morselli Gysi"
+location: "CRAN"
+draft: false
+# layout options: single, single-sidebar
+layout: single
+categories:
+- r packages
+- gene enrichment
+- disease association
+links:
+- icon: box-open
+  icon_pack: fas
+  name: package
+  url: https://cran.r-project.org/web/packages/RichR/
+---
+
+
+
+It provides a list of genes associated to diseases (`g2d$clean` and `g2d$complete`) based on the following  4 publications (GS2D, Fontaine (2016) [doi:10.18547/gcb.2016.vol2.iss1.e33], DisGeNET, Pinero (2016) [doi:10.1093/nar/gkw943] Berto2016, Berto (2016) [doi:10.3389/fgene.2016.00031] and  PsyGeNET, Sacristan (2015) [doi:10.1093/bioinformatics/btv301]). Those lists were combined and manually curated to have matching disease names.  When provided a list of gene names, it calculates the disease enrichment of the gene set. The enrichment is calculated using proportion test and Fisher's exact test. Adjusted fdr p-values are returned alongside with p-values combined using the Fisher's method. 
+
+You can download the package from CRAN using:
+
+``install.packages('RichR')``
+
+
+## Input data
+
+
+The input data for RichR are: the Background, that is the list of genes to be used as background control, the Genes2Dis, a data.frame containing genes and association to phenotypes and disorders and Genes, a vector of genes that should be tested for enrichment. 
+
+We recommend using `g2d$clean` as Genes2Dis. This is a manually curated list of genes and association to disorders.
+
+
+Usage
+
+```{r}
+require(RichR)
+data('g2d')
+
+g2d_clean = g2d$clean
+```
+
+
+
+The user can choose a particular disorder, or use the whole disease set to compare to
+
+```{r}
+g2d_ASD = subset(g2d_clean, 
+                 g2d_clean$Disease %in% c('AUTISM'))
+
+Enrichment(Background = g2d_clean$Gene.symbol,
+           Genes2Dis = g2d_ASD,
+           Genes = g2d_ASD$Gene.symbol[1:100])
+```
+
+## Session Info
+
+```{r}
+sessionInfo()
+```

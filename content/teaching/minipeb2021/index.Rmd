@@ -1,0 +1,1072 @@
+---
+title: "Network Analysis for Biological Data"
+author: "Deisy Morselli Gysi"
+subtitle: A surviving guide
+bibliography: book.bib
+biblio-style: apalike
+link-citations: yes
+event: "PEB"
+location: "Online"
+date: 2021-04-10
+layout: single
+categories:
+- r packages
+- co-expression
+- networks
+- network comparisson
+- network medicine
+links:
+- icon: box-open
+  icon_pack: fas
+  name: package
+  url: https://cran.r-project.org/web/packages/CoDiNA/
+---
+
+miniPEB 2021: Network Analysis
+
+Link to the course: [learnNetSci.](https://github.com/deisygysi/learnNetSci)
+
+```{r setup, include=FALSE}
+require(data.table)
+require(tidyr)
+require(igraph)
+require(dplyr)
+require(magrittr)
+require(ggplot2)
+require(visNetwork)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Network Science: Overview
+
+Network Science is broadly employed in many fields: from understanding *how friends bond in a party* to *how animals interact*; from *how superheroes appear in the same comic books* to *how genes can be related to a specific biological process*. Network analysis is especially beneficial for understanding complex systems, in all research fields. Examples of complex biological or medical systems include gene regulatory, ecological, and neuropsychology networks. In this workshop, the focus is given to applications of Network Science to the Medical Sciences.
+
+Here, I will start by introducing the basic network terminologies and then explore how can we define and identify disease modules, identify disease commorbidities, and lastly, we will learn how to repurpuse drugs for diseases with known modules. For each step, I will then present some classical and some new studies.
+
+It is expected some degree of familiarity with `R`, `ggplot2`, `tidyr`, and `igraph`.
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
+require(igraph)
+require(magrittr)
+require(kableExtra)
+require(visNetwork)
+require(dplyr)
+
+colors = data.frame(
+  base03=     "#002b36",
+  base02=     "#073642",
+  base01=     "#586e75",
+  base00=     "#657b83",
+  base0=      "#839496",
+  base1=      "#93a1a1",
+  base2=      "#eee8d5",
+  base3=      "#fdf6e3",
+  yellow=     "#b58900",
+  orange=     "#cb4b16",
+  red=        "#dc322f",
+  magenta=    "#d33682",
+  violet=     "#6c71c4",
+  blue=       "#268bd2",
+  cyan=       "#2aa198",
+  green=      "#859900")
+
+set.seed(124)
+edges = data.frame(from = c(sample(LETTERS[1:4], 
+                                   size = 10, replace = T), "F"), 
+                   to = c(sample(LETTERS[1:10]), "C"), color = colors$base03, shadow = TRUE)
+
+v = data.frame( ID = c(edges$from, edges$to)) %>%
+  group_by(ID) %>%
+  summarise(n = n())
+
+codes = c("f3a0", "f3c6", "f31c", "f3e4", "f4d7", 'f25d')
+cols = colors[1,-c(1:8)] %>% t()
+
+instagram = "f350"
+genes = 'f471'
+
+```
+
+-   How people interact in a party?
+
+```{r, echo=FALSE}
+set.seed(124)
+nodes = data.frame(id = v$ID, 
+                   shadow = TRUE,
+                   shape = "icon",
+                   icon.face = 'Ionicons',
+                   icon.code = sample(codes, length(v$ID), replace = TRUE), 
+                   icon.color = sample(cols, length(v$ID), replace = TRUE))
+
+visNetwork(nodes, edges) %>%
+  addIonicons()%>%
+  visLayout(randomSeed = 125)
+```
+
+-   How people interact in a Social Media?
+
+```{r, echo=FALSE}
+set.seed(124)
+nodes = data.frame(id = v$ID, shadow = TRUE,
+                   shape = "icon",
+                   icon.face = 'Ionicons',
+                   icon.code = sample(instagram, length(v$ID), replace = TRUE), 
+                   icon.color = sample(cols, length(v$ID), replace = TRUE))
+
+visNetwork(nodes, edges) %>%
+  addIonicons()%>%
+  visLayout(randomSeed = 125)
+```
+
+-   How genes interact?
+
+```{r, echo=FALSE}
+path_to_images <- "https://cdn.onlinewebfonts.com/svg/img_492877.png"
+set.seed(124)
+nodes = data.frame(id = v$ID, 
+                   shadow = TRUE,
+                   shape = "image",
+                   
+                   image = path_to_images,
+                   color = sample(cols, nrow(v), replace = TRUE))
+
+visNetwork(nodes, edges) %>% 
+  visNodes(shapeProperties = list(useBorderWithImage = TRUE))%>%
+  visLayout(randomSeed = 125)
+```
+
+### Why networks are important?
+
+Networks enable us to understand how **interactions** between entities can affect an outcome.
+
+-   How gene **interactions** can be associated with a **disease** or **trait**
+
+-   How genes can be **differentially co-expressed** in a **phenotype**
+
+-   How **drugs** target different proteins and can affect drug response
+
+### Terminology
+
+While the nature of each system, i.e. what its entities are and what kind of interactions they have, is different, there are common notations.
+
+The set of interactions among a set of entities is, in general, called a graph or a network [@Newman2018; @Barabasi2016]. In graph theory, each entity is called a vertex, while in network notation it is called a node [@Barabasi2016]. Accordingly, the connections between two entities are called edges or links, respectively [@Barabasi2016]. In this workshop, I will always use the network notation, unless otherwise specified. The total number of nodes in a network is often denoted as **N**, and the number of links in a network is denoted as **L**. While nodes can receive a label, links in general, are not labeled [@Barabasi2016] (although, in many cases, weights can also be perceived as a label).
+
+A network can be represented mathematically as an adjacency matrix (usually denoted as **A**), an edge-list, or visually as a graph.
+
+-   **Adjacency matrix**:
+
+```{r, echo=FALSE}
+g = graph_from_data_frame(edges, directed = F, vertices = nodes)
+
+g %>% 
+  as_adjacency_matrix(., sparse = F)%>% 
+  kbl(caption = 'Mathematical Representation of a Network: Adjacency Matrix.') %>%
+  kable_styling(font_size = 20)
+```
+
+-   **Edge list**:
+
+```{r, echo=FALSE}
+edges %>% 
+  dplyr::select(from, to) %>% 
+  kbl(caption = 'Mathematical Representation of a Network: Edge List.') %>%
+  kable_styling(font_size = 20)
+```
+
+-   A **network** is a pair **G = (N, L)** of a set **N** of nodes connected by a set **L** of links.
+
+-   Two nodes are neighbors if they are **connected**.
+
+-   The **degree** (d) of a node is the **number of nodes** it interacts with.
+
+-   Nodes with high degree are called **hubs**.
+
+-   The **strength** of a node is the **sum of the weights** attached to links belonging to a node.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.seed(124)
+v$label = as.character(v$n)
+v$value = v$n
+v$id = v$ID
+v$color = sample(cols, nrow(v), replace = TRUE)
+v$shape = "dot"
+
+edges$arrows = NULL
+visNetwork(v, edges) %>%
+  visOptions(highlightNearest = TRUE) %>%
+  visLayout(randomSeed = 125)
+```
+
+-   Networks come in all sorts of flavors. They can have **weights** and/ or **directions** on their edges.
+
+```{r, echo=FALSE}
+set.seed(124)
+nodes = data.frame(id = v$ID, shadow = TRUE,
+                   color = sample(cols, nrow(v), replace = TRUE))
+edges$width = runif(nrow(edges), min = 1, max = 10)
+visNetwork(nodes, edges) %>%
+  visLayout(randomSeed = 125)
+```
+
+```{r, echo=FALSE}
+set.seed(124)
+nodes = data.frame(id = v$ID, 
+                   shadow = TRUE,
+                   color = sample(cols, nrow(v), replace = TRUE))
+edges$width = NULL
+edges$arrows = "to"
+visNetwork(nodes, edges) %>%
+  visLayout(randomSeed = 125)
+```
+
+-   **Two nodes are connected** in a network, if a sequence of adjacent nodes, a **path**, connects them.
+
+-   The **shortest path** length is the number of links along the shortest path connecting two nodes.
+
+-   The **average path length** is the average of the shortest paths between all pairs of nodes.
+
+```{r, echo=FALSE,  message=FALSE, warning=FALSE}
+set.seed(124)
+v$label = v$ID
+edges$color[c(10,4)] <- colors$magenta
+edges$color[-c(10,4)] <- colors$base3
+edges$arrows = NULL
+
+visNetwork(v, edges) %>%
+  visOptions(highlightNearest = TRUE) %>%
+  visLayout(randomSeed = 125)
+```
+
+```{r, echo=FALSE,  message=FALSE, warning=FALSE}
+set.seed(124)
+v$label = v$ID
+edges$color[c(10,7)] <- colors$magenta
+edges$color[c(11,3)] <- colors$cyan
+edges$color[-c(10,11,7,3)] <- colors$base3
+
+visNetwork(v, edges) %>%
+  visOptions(highlightNearest = TRUE) %>%
+  visLayout(randomSeed = 125)
+```
+
+-   An **induced subgraph** is a subgraph that contains a set of "defined" nodes.
+
+## Data Commonly Used in Network Medicine
+
+In Network Medicine, we are often interested in understanding *how genes associated to a particular disease can influence each other*, *how two diseases are similar (or different)*, *and how a drug can be used in different set-ups.*
+
+For that, it is necessary to use data sets that are able to represent those associations: **Protein-Protein Interactions** are used as a map of the interactions inside our cells; **Gene-Disease-Associations** are used for us to identify genes that were previously associated to diseases, often using a GWAS approach.
+
+### Protein-Protein Interaction Networks {#PPI}
+
+In PPI networks, the nodes represent proteins, and they are connected by a link if they physically interact with each other [@rual2005]. Typically, these interactions are measured experimentally, for instance, with the Yeast-Two-Hybrid (Y2H) system [@uetz2000], or by protein complex immunoprecipitation followed by high-throughput Mass Spectrometry [@zhang2008; @koh2012], or inferred computationally based on sequence similarity [@fong2004]. PPI can be used to infer gene functions and the association of sub-networks to diseases [@Menche2015]. In this type of network, a highly connected protein tends to interact with proteins that are less connected, probably to prevent unwanted cross-talk of functional modules. Most of the methods in network medicine are based on PPI.
+
+#### Measuring PPIs
+
+Protein-Protein Interactions can be measured mainly using three different techniques:
+
+1.  By the creation of Protein-Protein interaction maps derived from existing scientific literature;
+
+2.  Using computational predictions of PPIs based on available orthogonal information; and
+
+3.  By systematic experimental mapping of proteins identify complex association and/or binary interactions.
+
+#### Commonly used data sources for PPIs
+
+PPIs can be found from different sources. I list here some well-known databases for that.
+
+1.  Binary PPIs derived from high-throughput yeast-two hybrid (Y2H) experiments;
+2.  Binary PPIs three-dimensional (3D) protein structures;
+3.  Binary PPIs literature curation;
+4.  PPIs identified by affinity purification followed by mass spectrometry;
+5.  Kinase substrate interactions;
+6.  Signaling interactions;
+7.  Regulatory interactions.
+
+#### Understanding a PPI
+
+For this workshop, we will be using for this workshop is a combination of a manually curated PPI that combines all previous data sets. The data can be [found here](https://github.com/deisygysi/learnNetSci/blob/main/inst/tutorials/PEB2021/data/PPI_Symbol_Entrez.csv). This PPI was previously published in @Gysi2020a.
+
+Before we can start any analysis using this interactome, let us first understand this data.
+
+The PPI contains the EntrezID and the HGNC symbol of each gene, and some might not have a proper map. Therefore, it should be removed from further analysis. Moreover, we might have loops, and those should also be removed.
+
+Let us begin by preparing our environment and calling all libraries we will need at this point.
+
+```{r prepare_enviroment, echo=TRUE, warning=FALSE, results='hide', message=FALSE}
+require(data.table)
+require(tidyr)
+require(igraph)
+require(dplyr)
+require(magrittr)
+require(ggplot2)
+```
+
+Let's read in our data.
+
+
+```{r, echo=TRUE}
+PPI = fread("./data/PPI_Symbol_Entrez.csv")
+
+head(PPI)
+```
+
+Let's transform our edge-list into a network.
+
+```{r create-ppi-intern, echo=FALSE}
+gPPI = PPI %>% 
+  select(starts_with("Symbol")) %>%
+  filter(Symbol_A != "") %>%
+  filter(Symbol_B != "") %>%
+  graph_from_data_frame(., directed = F) %>%
+  simplify()
+```
+
+
+How many genes do we have? How many interactions?
+
+```{r explore-ppi}
+gPPI
+```
+
+Next, let's check the degree distribution:
+
+```{r degree-distribution, fig.cap="PPI Degree Distribution.", echo=TRUE}
+dd = degree(gPPI) %>% 
+  table() %>% 
+  as.data.frame()
+
+names(dd) = c('Degree', "Nodes")
+dd$Degree %<>% as.character %>% as.numeric()
+dd$Nodes  %<>% as.character %>% as.numeric()
+
+ggplot(dd) +
+  aes(x = Degree, y = Nodes) +
+  geom_point(colour = "#1d3557") +
+  scale_x_continuous(trans = "log10") +
+  scale_y_continuous(trans = "log10") +
+  theme_minimal()
+```
+
+Most of the proteins have few connections, and very few proteins have lots of connections. Who's that protein?
+
+```{r ppi-hubs, results='markup'}
+degree(gPPI) %>% 
+  as.data.frame() %>% 
+  arrange(desc(.)) %>%
+  filter(. > 1000) 
+```
+
+#### Exercises
+
+Now is your turn. Spend some minutes understanding the data and getting some familiarity with it.
+
+1.  What are the top 10 genes with the highest degree?
+
+```{r ppi-hub-solution}
+G = degree(gPPI) %>% 
+  data.frame(Degree = .) %>% 
+  mutate(Gene = row.names(.)) %>%
+  arrange(desc(Degree)) %>%
+  mutate(index = 1:n()) %>%
+  filter(index <=  10) %>% 
+  pull(Gene)
+
+```
+
+2.  Are those genes connected?
+
+```{r ppi-conn-solution}
+gPPI %>% 
+  induced_subgraph(G)
+```
+
+### Gene Disease Association {#GDA}
+
+A Gene-Disease-Association (GDA) database are typically used to understand the association of genes to diseases, and model the underlying mechanisms of complex diseases. Those associations often come from GWAS studies and knock-out studies.
+
+#### Commonly used data sources for GDAs
+
+As PPIs, GDAs can be found from different sources and with different evidences for each Gene-Disease association. I list here some well-known databases for that.
+
+-   CTD -- Curated scientific literature [@davis2020]
+
+-   OMIM -- Curated scientific literature [@mckusick2007]
+
+-   DisGeNet -- Based on OMIM, ClinVar, and other data bases [@piñero2019]
+
+-   Orphanet -- Validated - and non-validated - GDAs
+
+-   ClinGen -- Validated - and non-validated - GDAs [@rehm2015]
+
+-   ClinVar -- Different levels of evidence [@landrum2019]
+
+-   GWAS catalogue -- GWAS associations to diseases [@buniello2018]
+
+-   PheGenI -- GWAS associations to diseases [@ramos2013]
+
+-   lncRNADisease -- Experimentally validated lncRNAs in diseases [@chen2012]
+
+-   HMDD -- Experimentally validated miRNAs in diseases [@huang2018]
+
+#### Understanding a GDA dataset
+
+We will use in this workshop Gene-Disease-Association from DisGeNet. It can be [found here](https://github.com/deisygysi/NetMed_Workshop/blob/master/data/curated_gene_disease_associations.tsv).
+
+Similar to the PPI, let us first get some familiarity with the data, before performing any analysis.
+
+Let's read in the data and, again, do some basic statistics.
+
+```{r, echo=TRUE}
+GDA = fread(file = './data/curated_gene_disease_associations.tsv', sep = '\t')
+
+head(GDA)
+```
+
+
+The first thing to notice is the inconsistency with the disease names, in order to be able to work with it, let's first put every disease to lower-case.
+
+```{r, echo=FALSE}
+Cleaned_GDA = GDA %>% 
+  filter(diseaseType == 'disease') %>%
+  mutate(diseaseName = tolower(diseaseName)) %>%
+  select(geneSymbol, 
+         diseaseName, 
+         diseaseSemanticType) %>%
+  unique() 
+```
+
+
+Let's also understand the degree distribution of the diseases.
+
+```{r emptydistgda, echo=TRUE}
+numGenes = Cleaned_GDA %>% 
+  group_by(diseaseName) %>%
+  summarise(numGenes = n()) %>%
+  ungroup() %>%
+  group_by(numGenes) %>%
+  summarise(numDiseases = n())
+```
+
+
+```{r, fig.cap= "Gene-Disease degree distribution.", echo=TRUE, }
+
+numGenes = Cleaned_GDA %>% 
+  group_by(diseaseName) %>%
+  summarise(numGenes = n()) %>%
+  ungroup() %>%
+  group_by(numGenes) %>%
+  summarise(numDiseases = n())
+
+ggplot(numGenes) +
+  aes(x = numGenes, y = numDiseases) +
+  geom_point(colour = "#1d3557") +
+  scale_x_continuous(trans = "log10") +
+  scale_y_continuous(trans = "log10") +
+  labs(x = "Genes", y = "Diseases")+
+  theme_minimal()
+
+```
+
+Because we want to focus in well studied diseases, and also that are known to be complex diseases, let's filter for diseases with at least 10 genes.
+
+```{r, echo=TRUE, }
+Cleaned_GDA %<>% 
+  group_by(diseaseName) %>%
+  mutate(numGenes = n()) %>%
+  filter(numGenes > 10)
+
+Cleaned_GDA$diseaseName %>%
+  unique() %>%  
+  length()
+```
+
+#### Exercises
+
+Now is your turn. Spend some minutes understanding the data and getting some familiarity with it.
+
+1.  What are the top 10 genes mostly involved with diseases? What are those diseases?
+
+
+```{r gda-topgene-solution}
+Cleaned_GDA %>%
+  select(diseaseName, geneSymbol) %>%
+  unique %>%
+  group_by(geneSymbol) %>%
+  summarise(numDis = n()) %>%
+  arrange(desc(numDis)) %>%
+  mutate(index = 1:n()) %>%
+  filter(index <= 10)
+```
+
+2.  What are the top 10 highly polygenic diseases?
+
+
+```{r gda-topdis-solution}
+Cleaned_GDA %>%
+  select(diseaseName, geneSymbol) %>%
+  unique %>%
+  group_by(diseaseName) %>%
+  summarise(numGenes = n()) %>%
+  arrange(desc(numGenes)) %>%
+  mutate(index = 1:n()) %>%
+  filter(index <= 10)
+```
+
+3.  What are the top 10 highly polygenic disease classes?
+
+```{r gda-topcl-solution}
+Cleaned_GDA %>%
+  select(diseaseName, geneSymbol, diseaseSemanticType) %>%
+  unique %>%
+  group_by(diseaseSemanticType) %>%
+  summarise(numGenes = n()) %>%
+  arrange(desc(numGenes)) %>%
+  mutate(index = 1:n()) %>%
+  filter(index <= 10)
+```
+
+## Methods for Disease Module Identification and Disease Similarity {#methods}
+
+In this chapter, I will introduce the main methods used in *Network Medicine*. We will start by understanding what a *Disease Module* is, how we can calculate its significance, and also understand its importance. Next, we will explore the *disease separation*, how to calculate, and make interpretations.
+
+### Disease Module {#diseasemodule}
+
+In biological networks, genes are often involved in the same topological communities are also associated with similar biological processes [@Ahn2010]. It also reflects on *how diseases localized themselves in the interaction*; meaning that, disease modules are highly localized in specific network neighborhoods [@Menche2015].
+
+#### Largest connected component
+
+The size of the **largest connected component** (LCC) is the **number of nodes that form a connected subgraph** (in our case, it is the number of proteins that are interconnected in the PPI). Many properties of this quantity allow us to understand how a particular disease interacts with the interactome. It is important to note here that this measure is highly dependent on the completeness of an interactome. If a link between a protein and its counterparts is unknown -- therefore missing -- we might say that that particular node is not involved in a disease module (or that the LCC is not significant).
+
+```{r diseasemodule,fig.cap='Disease-Module. In a schematic of a PPI, in pink, we see genes associated with a disease, forming a connected component of size 4.', echo=FALSE,  message=FALSE, warning=FALSE}
+
+require(NetSci)
+require(magrittr)
+require(dplyr)
+require(igraph)
+
+set.seed(124)
+N = 25
+DM = c("C",  "F", "N", "B", "K")
+A = data.frame(source = sample(LETTERS[1:5], size = N, replace = T), 
+               target = sample(LETTERS[1:15], replace = T, size = N), type = "PPI")
+A$type = ifelse(A$source %in% DM & A$target %in% DM, "DM", "no")
+A = unique(A)
+A %<>% filter(source != target)
+g = igraph::graph_from_data_frame(A, directed = F) 
+
+
+V(g)$color = "#FFCDB2"
+V(g)$size = (degree(g)+1)*5
+V(g)$label.color = '#B5838D'
+V(g)$color = ifelse(V(g)$name %in% DM, '#B65064', V(g)$color )
+
+E(g)$color = '#E5989B'
+E(g)$color = ifelse(E(g)$type == "DM", E(g)$color, "gray70")
+E(g)$width = 0.6
+E(g)$width = ifelse(E(g)$type == "DM", 0.6, E(g)$width)
+E(g)$curved = 0.1
+V(g)$frame.color = V(g)$color
+#par(mar = c(0,0,0,0))
+g %<>% simplify()
+x = visIgraph(g)
+
+GG = visNetwork(x$x$nodes, x$x$edges)
+GG
+```
+
+However, just computing this number might not be informative, and it is expected a randomness. To calculate this randomness, we often calculate the significance of the LCC by selecting proteins in the interactome with similar degrees (aka degree preserving randomization).
+
+To calculate the significance of the LCC, one can calculate its Z-Score or simply calculate the empirical probability under the curve from the empirical distribution. The Z-score is given by:
+
+$$
+Z-Score_{LCC} = \frac{LCC - \mu_{LCC}}{\sigma_{LCC}}.
+$$
+
+#### Example in real data
+
+Our first task now is to understand if some diseases, from our `Cleaned_GDA` are able to form a Disease-Module. Let's start doing it for Schizophrenia and later we will add some more diseases.
+
+The idea now is: Gather the genes associated to our disease in the data, find them in the PPI, check if they form a connected component, check the significance of the component and visualize the Disease-Module.
+
+```{r, echo=TRUE, results='hide', warning=FALSE, message=FALSE, echo=TRUE, }
+# First, let's attach all packages we will need.
+require(NetSci)
+require(magrittr)
+require(dplyr)
+require(igraph)
+```
+
+```{r, results='hide', echo=TRUE}
+#First, let's select genes that are associated with Schizophrenia.
+
+SCZ_Genes = 
+  Cleaned_GDA %>% 
+  filter(diseaseName %in% 'schizophrenia') %>%
+  pull(geneSymbol) %>% 
+  unique()
+
+# Next, let's see how they are localized in the PPI.
+# Fist, we have to make sure all genes are in the PPI.
+# Later, we calculate the LCC.
+# And lastly, let's visualize it.
+
+SCZ_PPI = SCZ_Genes[SCZ_Genes %in% V(gPPI)$name]
+gScz = gPPI %>%
+  induced.subgraph(., SCZ_PPI)
+```
+
+```{r components, echo=TRUE, }
+components(gScz)$csize %>% max
+```
+
+
+The size of the LCC is 683. However, how does it compare to a random selection genes?
+
+```{r LCC, echo=TRUE, exercise.timelimit = 1000}
+LCC_scz = LCC_Significance(N = 100, 
+                           Targets = SCZ_PPI,
+                           G = gPPI)
+Histogram_LCC(LCC_scz)
+```
+
+
+```{r SCZplot, echo=TRUE, }
+gScz 
+
+V(gScz)$size = degree(gScz) %>% 
+  CoDiNA::normalize()
+V(gScz)$size = (V(gScz)$size + 0.1)*5
+V(gScz)$color = '#83c5be'
+V(gScz)$frame.color = '#006d77'
+V(gScz)$label = ifelse(V(gScz)$size  > 4, V(gScz)$name, NA )
+V(gScz)$label.color = '#e29578'
+
+E(gScz)$width = edge.betweenness(gScz, directed = F) %>% CoDiNA::normalize()
+E(gScz)$width = E(gScz)$width + 0.01
+E(gScz)$weight = E(gScz)$width
+par(mar = c(0,0,0,0))
+plot(gScz)
+```
+
+Let's remove all genes with degree = 0. (Genes that do not connect to any other gene).
+
+```{r, echo=TRUE, }
+gScz %<>% delete.vertices(., degree(.) == 0)
+
+V(gScz)$size = degree(gScz) %>% 
+  CoDiNA::normalize()
+V(gScz)$size = (V(gScz)$size + 0.1)*5
+V(gScz)$color = '#83c5be'
+V(gScz)$frame.color = '#006d77'
+V(gScz)$label = ifelse(V(gScz)$size  > 4, V(gScz)$name, NA )
+V(gScz)$label.color = '#e29578'
+
+E(gScz)$width = edge.betweenness(gScz, directed = F) %>% CoDiNA::normalize()
+E(gScz)$width = E(gScz)$width + 0.01
+E(gScz)$weight = E(gScz)$width
+par(mar = c(0,0,0,0))
+plot(gScz)
+```
+
+#### Exercises
+
+1.  Calculate the LCC, and visualize the modules for the following diseases:
+
+-   Autistic Disorder;
+
+
+```{r LCC-autism-solution}
+Disease_Genes = 
+  Cleaned_GDA %>% 
+  filter(diseaseName %in% 'autistic disorder') %>%
+  pull(geneSymbol) %>% 
+  unique()
+
+Disease_PPI = Disease_Genes[Disease_Genes %in% V(gPPI)$name]
+
+LCC_Disease = LCC_Significance(N = 1000, Targets = Disease_PPI, G = gPPI)
+Histogram_LCC(LCC_Disease)
+
+gDis = gPPI %>%
+  induced.subgraph(., Disease_PPI)
+
+gDis %<>% delete.vertices(., degree(.) == 0)
+
+V(gDis)$size = degree(gDis) %>% 
+  CoDiNA::normalize()
+V(gDis)$size = (V(gDis)$size + 0.1)*5
+V(gDis)$color = '#83c5be'
+V(gDis)$frame.color = '#006d77'
+V(gDis)$label = ifelse(V(gDis)$size  > 4, V(gDis)$name, NA )
+V(gDis)$label.color = '#e29578'
+
+E(gDis)$width = edge.betweenness(gDis, directed = F) %>% CoDiNA::normalize()
+E(gDis)$width = E(gDis)$width + 0.1
+E(gDis)$weight = E(gDis)$width
+par(mar = c(0,0,0,0))
+plot(gDis)
+```
+
+- Bipolar Disorder;
+
+
+
+- Major Depressive Disorder; 
+
+
+
+-   Rheumatoid Arthritis;
+
+
+
+-   Asthma
+
+
+
+-   Parkinson Disease
+
+
+
+-   Endometriosis
+
+
+
+### Gene Overlap
+
+A first intuitive way to measure the overlap of two gene sets is by calculating its overlap, or its normalized overlap, the **Jaccard Index**. The Jaccard index is calculated by taking the ratio of **Intersection of two sets over the Union of those sets**. The Jaccard coefficient measures similarity between finite sample sets, and is defined as the size of the intersection divided by the size of the union of the sample sets:
+
+$$
+J(A,B) = \frac{|A \cap B|}{|A \cup B|} = \frac{|A \cap B|}{|A| + |B| - |A \cap B|}.
+$$
+
+Note that by design, $0 \leq J(A,B) \leq 1$. If A and B are both empty, define $J(A,B) = 1$.
+
+Let's calculate the Jaccard Index for the diseases we calculated its LCCs.
+
+```{r, echo=TRUE}
+Dis_Ex1 = c('schizophrenia', 
+            'autistic disorder',
+            'bipolar disorder',
+            "major depressive disorder",
+            'asthma', 
+            'rheumatoid arthritis',
+            'parkinson disease',
+            'endometriosis')
+GDA_Interest = Cleaned_GDA %>% 
+  filter(diseaseName %in% Dis_Ex1) %>%
+  select(diseaseName, geneSymbol) %>%
+  unique()
+
+Jaccard_Ex2 = Jaccard(GDA_Interest)
+
+Jaccard_Ex2
+```
+
+```{r, echo=TRUE }
+# Let's visualize the Venn diagram (Euler Diagram) of those overlaps. 
+
+require(eulerr)
+Euler_List = list (
+  SCZ = GDA_Interest$geneSymbol[GDA_Interest$diseaseName == 'schizophrenia'],
+  
+  ASD = GDA_Interest$geneSymbol[GDA_Interest$diseaseName == 'autistic disorder'],
+  
+  BD = GDA_Interest$geneSymbol[GDA_Interest$diseaseName == 'bipolar disorder'],
+  
+  MDD = GDA_Interest$geneSymbol[GDA_Interest$diseaseName == 'major depressive disorder'],
+  
+  AT = GDA_Interest$geneSymbol[GDA_Interest$diseaseName == 'asthma'],
+  
+  RA = GDA_Interest$geneSymbol[GDA_Interest$diseaseName == 'rheumatoid arthritis'],
+  
+  ED = GDA_Interest$geneSymbol[GDA_Interest$diseaseName == 'endometriosis'],
+  
+  PD = GDA_Interest$geneSymbol[GDA_Interest$diseaseName == 'parkinson disease'])
+
+EULER = euler(Euler_List)
+plot(EULER, quantities = TRUE)
+```
+
+
+
+### Disease Separation {#dissep}
+
+When looking into the Jaccard Index, we have a sense of how similar two diseases are based on genes that are **known** to be associated with both diseases. The main problem with this is that we assume that all genes associated with a disease is known, and we do not take the topology of the underlying network into account.
+
+The **separation** is a complementary quantity that is a bit less sensitive to the incompleteness of the PPI, we can measure the distances $d_s$ of each disease-associated node to all other disease associated nodes. Taking into account only the shortest distance between them results in a distribution $P(d_s)$. The mean value $<d_s>$ can be interpreted as the diameter of the disease model. **Note** the diameter here is the average distance instead of the maximal distance.
+
+The **concept of network localization** can be further generalized to examine the relationship between any different sets of nodes, for example, proteins associated with two different diseases. The network serves as a **map**, where diseases are represented by different neighborhoods. How close and the degree of overlap of two network neighborhoods can be found to be highly predictive of the pathological similarity of those diseases [@Menche2015].
+
+To quantify the distance of two sets of nodes A and B, we first compute the distribution $P(d_{AB})$ of all shortest distances $d_{AB}$ between nodes A and B and the respective mean distance $<d_{AB}>$.
+
+The network based separation $S_{AB}$ can be obtained by comparing the mean shortest distance **within** the respective node sets and the mean shortest distance **between** them.
+
+$$
+S_{AB} = <d_{AB}> - \frac{<d_{AA}> + <d_BB>}{2}.
+$$
+
+**Note**: negative $S_{AB}$ indicates topological overlap of the two node sets, while a positive $S_{AB}$ indicates a topological separation of the two node sets.
+
+The size of the overlap is highly predictive of pathological and functional similarity, elevated co-expression, symptoms similarity, and high comorbidity diseases.
+
+```{r separation,fig.cap='Disease-Separation. In a schematic PPI, we see genes associated with a disease A (in pink), and genes associated to disease B (in green).', echo=FALSE}
+
+set.seed(124)
+N = 35
+DM = c("C",  "K", "N", "E", "O")
+DM2 = c("A",  "G", "L", "M")
+A = data.frame(source = sample(LETTERS[1:6], size = N, replace = T), 
+               target = sample(LETTERS[1:15], replace = T, size = N), type = "PPI")
+A$type = ifelse(A$source %in% DM & A$target %in% DM, "DM1", "no")
+A$type = ifelse(A$source %in% DM2 & A$target %in% DM2, "DM2", A$type)
+A = unique(A)
+A %<>% filter(source != target)
+g = igraph::graph_from_data_frame(A, directed = F)  %>% 
+  simplify(remove.multiple = F)
+
+
+V(g)$color = "#FFCDB2"
+V(g)$size = (degree(g)+1)*5
+V(g)$label.color = '#B5838D'
+V(g)$color = ifelse(V(g)$name %in% DM, '#B65064', V(g)$color )
+V(g)$color = ifelse(V(g)$name %in% DM2, '#74c69d', V(g)$color )
+V(g)$label.color = ifelse(V(g)$name %in% DM, 'gray90', V(g)$label.color )
+V(g)$label.color = ifelse(V(g)$name %in% DM2, '#2d6a4f', V(g)$label.color )
+
+E(g)$color = 'gray70'
+E(g)$color = ifelse(E(g)$type == "DM1", "#FFB4A2", E(g)$color)
+E(g)$color = ifelse(E(g)$type == "DM2", "#95d5b2", E(g)$color)
+
+E(g)$width = 0.6
+E(g)$width = ifelse(E(g)$type == "DM1" |E(g)$type == "DM2" , 1.5, E(g)$width)
+E(g)$curved = 0.1
+V(g)$frame.color = V(g)$color
+
+g %<>% simplify()
+x = visIgraph(g)
+
+GG = visNetwork(x$x$nodes, x$x$edges)
+GG
+```
+
+
+The separation of diseases A and B is given by: 
+$$
+<d_{AA}> = 1.5
+$$
+
+$$
+<d_{BB}> = 1.5
+$$
+
+$$
+<d_{AB}> = 2.7
+$$ 
+$$
+S_{AB} = 2.7 - \frac{1.5+ 1.5}2 = 1.2.
+$$
+
+
+
+#### Example in real data
+
+```{r, echo=TRUE}
+sab = separation(gPPI, GDA_Interest)
+
+sab
+
+Sep_ex2 = sab$Sab %>% as.matrix()
+
+Sep_ex2[lower.tri(Sep_ex2)] = t(Sep_ex2)[lower.tri(Sep_ex2)]
+```
+
+
+We can visualize the network separation of the diseases using a heatmap.
+
+```{r, echo=TRUE}
+Sep_ex2 %>% heatmap(., symm = T)
+```
+
+### Exercises
+
+1.  Calculate the **Jaccard Index** and the **Separation** for the diseases that have `diseaseSemanticType` as *Mental or Behavioral Dysfunction*.
+
+
+```{r sab-solution}
+Disease_Genes = 
+  Cleaned_GDA %>% 
+  filter(diseaseSemanticType %in% c('Mental or Behavioral Dysfunction')) %>%
+  select(diseaseName, geneSymbol) %>% 
+  unique()
+
+sab = separation(gPPI,  Disease_Genes)
+jac = Jaccard(Disease_Genes)
+```
+
+2.  Optional: Try to make the network visualization for the heatmap of `Sep_ex2`. Use diseases as nodes, and their weight as links.
+
+
+```{r sab-net-solution}
+G = Sep_ex2 %>% 
+  graph_from_adjacency_matrix(., 
+                              mode = "undirected", 
+                              weighted = TRUE) 
+
+V(G)$size = abs(strength(G))
+E(G)$width = abs(E(G)$weight)
+
+plot(G)
+```
+
+3.  Optional: If we go back to our PPI, can we identify that the modules are indeed close or separated? Plot the network for those diseases.
+
+
+
+## Gene Co-expression Networks
+
+In co-expression networks, a pair of nodes is typically connected by a link if the genes they represent show a *significantly correlated expression pattern* across a set of biological samples of interest. They are often built from genome-wide expression data measured by RNA-Seq or microarrays. Those networks are often weighted, and it represents the strength of a gene-pair relationship. Gene co-expression networks are also signed, and the sign of the link can be indicative of whether a gene pair is regulated in the same direction or oppositely controlled. The majority of the methods used for constructing those networks rely on a similarity measure, such as mutual information or correlation. In this course, we will use the **wTO** [@Gysi2018; @Nowick2009] method . This is a correlation based method, that normalizes the effect of the interaction by all gene neibours and that also accounts for positive and negative interactions. It also calculates the probability for each gene pair, reducing the false positive links.
+
+A next step for co-expression analysis is by comparing the resulting networks for different groups. For that the **CoDiNA** (Co-expression Differential Network Analysis) [@morselligysi2020] method can be used.
+
+### Construction of co-expression networks
+
+To run the weighted topological overlap (wTO) in R we can easily do by loading the wTO R package. It calculates the networks using expression data, where genes are on the rows and individuals in the columns. The user can select parallel computing for faster computation.
+
+For the sake of time, we will be focusing here on the network of differential expressed genes. However, in a real set-up, the best approach is to use the full set of genes.
+
+For the analysis we will be using the data from GSE12654 [@Iwamoto2004]. The file here contains Pre Frontal Cortex samples from Control and patients with Bipolar Disorder, Schizophrenia and Major Depression, and is already filtered for only differential expressed genes.
+
+
+- Let's read in the data:
+
+
+```{r brain, echo=TRUE, results='markup'}
+
+require(wTO)
+require(CoDiNA)
+Brain = fread("./data/Brain.csv") %>% 
+  as.data.frame()
+row.names(Brain) = Brain$V1
+
+Brain = Brain[,-1]
+
+```
+
+- Let's look into it:
+
+```{r data-play}
+Brain[1:10, 1:10]
+```
+
+- How to run the `wTO`?
+
+You'll need a `data.frame` with genes on the rows, individuals on the columns, gene names on the `row.names`. We also need to create one network per disease. 
+
+
+
+```{r wtoBD, echo=TRUE, results='markup'}
+BD = Brain %>% 
+  dplyr::select(starts_with('BD')) %>%
+  wTO.fast(n = 100, Data = .)
+
+
+```
+
+- Let's explore the output
+
+```{r wto-play, }
+head(BD)
+```
+
+
+```{r wtoOther, echo=TRUE, results='markup'}
+SCZ = Brain %>% select(starts_with('SCZ')) %>% 
+  wTO::wTO.fast(n = 100, Data = .)
+
+CTR = Brain %>% select(starts_with('CTR')) %>% 
+  wTO::wTO.fast( n = 100, Data = .)
+
+MDD = Brain %>% select(starts_with('MDD')) %>% 
+  wTO::wTO.fast( n = 100, Data = .)
+```
+
+- The next step is to filter the edges of the network to keep only ones with a significant p-value. For that, we will set all other weights to zero.
+
+```{r wtofilter, echo=TRUE, results='markup'}
+BD_cl = BD %>% 
+  mutate(wTO = ifelse(pval < 0.05, wTO, 0))
+
+MDD_cl = MDD %>% 
+  mutate(wTO = ifelse(pval < 0.05, wTO, 0))
+
+CTR_cl = CTR %>% 
+  mutate(wTO = ifelse(pval < 0.05, wTO, 0))
+
+SCZ_cl = SCZ %>% 
+  mutate(wTO = ifelse(pval < 0.05, wTO, 0))
+```
+
+### Comparing multiple networks
+
+When comparing more than one network, different measures can be used, for example, one can identify the hubs in one network, identify modules and clusters in each one and compare those results. However, none of those comparisons compare the network topology and structure. For that, we have to compare links and nodes, and it can be easily done using CoDiNA. 
+
+CoDiNA identifies links - and nodes -that are **common** to all networks; **specific** to one network; or **different** in one network. 
+
+- Common ($\alpha$ | `a`): A particular interaction exists in *all networks* under comparison *with the same sign*; 
+- Different ($\beta$ | `b.`): A particular interaction exists in *all networks* under comparison *with different sign*; 
+- Specific ($\gamma$ | `g.`): A particular interaction *does not* exists in *all networks* under comparison. 
+
+To calculate it, you can use the function `MakeDiffNet` and you need to provide a edge list with the weights.
+
+```{r Codina, echo=TRUE, results='markup'}
+require(CoDiNA)
+DiffNet = MakeDiffNet(Data = list(CTR_cl, BD_cl, MDD_cl, SCZ_cl),
+                      Code = c("CTR", "BD", "MDD", "SCZ"))
+```
+
+
+
+After comparing the networks, we need to filter them for links that strongly well-clustered and representative of their class.
+
+```{r , echo=TRUE, results='markup'}
+DiffNet_cl = DiffNet %>% 
+  filter( Score_ratio > 1)
+
+net_fig = plot(DiffNet_cl, cutoff.external = 0, cutoff.internal = 1)
+
+```
+
+
+```{r, echo=TRUE, results='markup'}
+e = net_fig$Edges 
+names(e) = c("from", "to", "group", "Phi", "width")
+e$weight = e$width
+n = net_fig$Nodes
+n$Phi_tilde %<>% as.factor()
+n$group = n$Phi_tilde
+# n$color = RColorBrewer::brewer.pal(nlevels(n$Phi_tilde), "Pastel2")[unclass(n$Phi_tilde)]
+# n$frame.color = RColorBrewer::brewer.pal(nlevels(n$Phi_tilde), "Set2")[unclass(n$Phi_tilde)]
+# n$label.color = RColorBrewer::brewer.pal(nlevels(n$Phi_tilde), "Dark2")[unclass(n$Phi_tilde)]
+
+
+gDis = graph_from_data_frame(e, vertices = n, directed = F)
+V(gDis)$size = strength(gDis) %>% 
+  CoDiNA::normalize()
+V(gDis)$size = (V(gDis)$size + 0.1)*30
+V(gDis)$label = ifelse(V(gDis)$size  > 4, V(gDis)$name, NA )
+V(gDis)$value = V(gDis)$size
+E(gDis)$weight = E(gDis)$width * 100
+
+E(gDis)$length = E(gDis)$width
+x = visIgraph(gDis)
+
+visNetwork(nodes = x$x$nodes, edges = x$x$edges) %>%
+  visPhysics(enabled = F) %>% 
+  visIgraphLayout(layout = "layout_with_fr") %>%
+  visLegend()
+
+```
+
+## References
