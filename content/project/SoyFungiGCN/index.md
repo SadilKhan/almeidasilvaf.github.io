@@ -1,0 +1,23 @@
+---
+title: "SoyFungiGCN"
+subtitle: "An R/Shiny package to explore soybean-fungi interactions at the transcriptional level"
+excerpt: "An R/Shiny package to explore soybean-fungi interactions at the transcriptional level"
+date: 2021-08-07
+author: "Fabrício Almeida-Silva"
+draft: false
+tags:
+  - coexpression networks
+  - bioconductor
+categories:
+  - R packages
+layout: single
+links:
+ - icon: github
+   icon_pack: fab
+   name: Repo
+   url: https://github.com/almeidasilvaf/SoyFungiGCN
+---
+
+## Summary
+
+SoyFungiGCN is an R package that contains a Shiny app to let users explore a gene coexpression network inferred from RNA-seq data of soybean tissues infected with phytopathogenic fungi.

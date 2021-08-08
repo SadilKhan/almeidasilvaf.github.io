@@ -110,7 +110,7 @@ enableEmoji = true
   [[menu.header]]
     name = "Softwares & Data"
     title = "Softwares"
-    url = "/projects/"
+    url = "/project/"
     weight = 2
     
   [[menu.header]]

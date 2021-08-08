@@ -1,7 +1,6 @@
 ---
-title: Projects I'm involved with
-#description: "Give your projects a place to live online."
-author: "Deisy Morselli Gysi"
+title: Softwares and data products
+author: "Fabrício Almeida-Silva"
 show_post_thumbnail: true
 show_author_byline: true
 show_post_date: false
@@ -28,7 +27,7 @@ cascade:
   # for single-sidebar layout only
   sidebar:
     text_link_label: View all projects
-    text_link_url: /project/
+    text_link_url: /projects/
     show_sidebar_adunit: false # show ad container
 ---
 
