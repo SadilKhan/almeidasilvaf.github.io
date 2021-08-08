@@ -20,9 +20,10 @@ draft: false
 layout: single
 categories:
 - paper
-- R package
-- coexpression network
-- software
+- soybean
+- GWAS
+- seed oil
+- biotechnology
 
 ---
 
