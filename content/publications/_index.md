@@ -1,10 +1,10 @@
 ---
 title: My Publications
 description: |
- Here I list all my publications
-author: "Deisy Morselli Gysi"
+ Here is a list of my publications.
+author: "Fabrício Almeida-Silva"
 show_post_thumbnail: true
-show_author_byline: true
+show_author_byline: false
 show_post_date: true
 show_post_time: false
 # for listing page layout
@@ -15,14 +15,14 @@ layout: list #list, list-sidebar
 sidebar: 
   title: My Publications
   description: |
-    Here I list all my publications.
+    Here is a list of my publications.
 
-  author: "Deisy Morselli Gysi"
+  author: "Fabrício Almeida-Silva"
   show_sidebar_adunit: false # show ad container
 
 # set up common front matter for all individual pages inside project/
 cascade:
-  author: "Deisy Morselli Gysi"
+  author: "Fabrício Almeida-Silva"
   show_author_byline: true
   show_post_date: true
   show_post_time: false
