@@ -209,6 +209,7 @@ form {
   input[type="checkbox"] {
     @extend .mv2, .mh1 ;
   }
+  
   textarea {
     @extend .input-reset, .pa3, .mt2, .mb3, .mh0, .lh-copy, .ba, .br0, .b--#{$borderColor}, .bg-transparent, .w-100 ;
   }

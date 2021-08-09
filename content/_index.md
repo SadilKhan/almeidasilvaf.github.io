@@ -1,7 +1,7 @@
 ---
 title: "Fabrício Almeida-Silva"
 subtitle: "Plant Genomics & Systems Biology"
-description: "Biotechnology | Bioinformatics | Evolution | Software"
+description: "Biotechnology | Bioinformatics | Evolution"
 #images:
 #  - img/profilepic.jpg
 date: 2021-08-07

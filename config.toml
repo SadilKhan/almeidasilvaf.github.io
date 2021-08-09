@@ -30,9 +30,9 @@ enableEmoji = true
 [params]
   orgName = "Fabrício Almeida-Silva"
   orgLocal = ""
-  description = "Plant biotechnology | Systems Biology | Genomics | Evolution"
-  favicon = "/img/blogophonic-mark-dark.png"
-  logo = "/img/blogophonic-mark-dark.png"
+  description = "Biotechnology | Bioinformatics | Evolution"
+  favicon = "/img/logo_tree_graph.png"
+  logo = "/img/logo_tree_graph.png"
   mainSections = ["publications", "project", "talk"]
   navallcaps = true
   # show/hide social icons in site header & footer
@@ -41,7 +41,7 @@ enableEmoji = true
   socialInFooter = true
   # Default image for social sharing and search engines.
   # Place image file in `static` folder and specify image name here.
-  sharing_image = "/img/blogophonic-mark-dark.png"
+  sharing_image = "/img/logo_tree_graph.png"
   # Twitter username (without @). Used when a visitor shares your site on Twitter.
   twitter = "almeidasilvaf"
 

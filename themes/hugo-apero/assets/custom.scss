@@ -1,4 +1,5 @@
 // Override this file to add your own SCSS styling.
+
 body.dark-mode,
 dark-mode main * {
   // apply tachyons font family and color options from config
@@ -182,6 +183,7 @@ dark-mode main * {
     }
   }
   // home page action jackson
+  
   .home {
     .action.button {
       @extend .input-reset, .ph4, .pv3, .mb3, .f6, .ttu, .tracked, .b, .bw1, .br0, .link, .pointer, .bg-animate, .b--transparent;
@@ -196,6 +198,7 @@ dark-mode main * {
       @extend .db, .mb4, .ttu, .tracked, .b, .link ;
     }
   }
+
 
   // CSS GRID SCAFFOLD
   .grid-container {
@@ -512,6 +515,7 @@ dark-mode main * {
     scroll-padding-top: 73px;
   }
 }
+
 
 particles-js {
   position: absolute;
