@@ -1,7 +1,7 @@
 ---
 ## Configure sidebar content in narrow column
 author: "Fabrício Almeida-Silva"
-role: "Biotechnology | Bioinformatics | Evolution | Software"
+role: "Biotechnology | Bioinformatics | Evolution"
 avatar_shape: rounded # circle, square, rounded
 show_social_links: true # specify social accounts in site config
 ---
