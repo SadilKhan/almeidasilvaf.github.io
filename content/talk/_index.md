@@ -1,8 +1,8 @@
 ---
 title: Talks I've given
 description: |
- Here I list all talks I gave in conferences 
-author: "Deisy Morselli Gysi"
+ Here is a list of slides for my talks in conferences
+author: "Fabrício Almeida-Silva"
 show_post_thumbnail: true
 show_author_byline: true
 show_post_date: true
@@ -14,15 +14,14 @@ layout: list # list, list-sidebar
 sidebar: 
   title: Talks I've given
   description: |
-    Here I list all talks I gave in conferences 
-     author: "Deisy Morselli Gysi"
-  #text_link_label: Subscribe via RSS
+    Here is a list of slides for my talks in conferences
+  author: "Fabrício Almeida-Silva"
   text_link_url: /talk/index.xml
   show_sidebar_adunit: false # show ad container
 
 # set up common front matter for all pages inside blog/
 cascade:
-  author: "Deisy Morselli GYsi"
+  author: "Fabrício Almeida-Silva"
   show_author_byline: true
   show_post_date: true
   show_post_time: true
