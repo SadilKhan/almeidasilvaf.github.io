@@ -15,6 +15,4 @@
   <script src="{{ $panelsetJs.RelPermalink }}" type="text/javascript"></script>
   <!-- headroom.js -->
   {{ $mainJs := resources.Get "js/main.js" | js.Build "main.js" | minify | fingerprint }}
-  <script src="{{ $mainJs.RelPermalink }}" type="text/javascript"></script>
-  {{ partial "toggle.html" . }}
 </head>
