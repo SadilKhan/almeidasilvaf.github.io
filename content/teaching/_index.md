@@ -1,8 +1,8 @@
 ---
 title: Teaching
 description: |
-  This is a list of courses I taught
-author: "Deisy Morselli Gysi"
+  This is a list of courses I've taught
+author: "Fabrício Almeida-Silva"
 show_post_thumbnail: true
 show_author_byline: true
 show_post_date: true
@@ -13,16 +13,16 @@ layout: list-grid # list, list-sidebar
 # for list-sidebar layout
 sidebar: 
   title: Teaching
-  description: "|
-  This is a list of courses I taught"
-  author: "Deisy Morselli Gysi"
+  description: |
+    This is a list of courses I've taught
+  author: "Fabrício Almeida-Silva"
   text_link_label: Subscribe via RSS
   text_link_url: /teaching/index.xml
   show_sidebar_adunit: false # show ad container
 
 # set up common front matter for all pages inside blog/
 cascade:
-  author: "Deisy Morselli Gysi"
+  author: "Fabrício Almeida-Silva"
   show_author_byline: true
   show_post_date: true
   show_post_time: true

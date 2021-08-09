@@ -1,18 +1,17 @@
 ---
-title: SideBar Title
+title: My blog
 description: |
-  This is a fully featured blog that supports categories, 
-  tags, series, and pagination.
-author: "The R Markdown Team @RStudio"
+  Blog posts on bioinformatics, data science and stuff.
+author: "Fabrício Almeida-Silva"
 show_post_thumbnail: true
 show_author_byline: true
 show_post_date: true
 # for listing page layout
-layout: list-sidebar #list-grid , list-sidebar , list, list-sidebar, list-grid
+layout: list #list-grid , list-sidebar , list, list-sidebar, list-grid
 
 # for list-sidebar layout
 sidebar: 
-  title: SiderBar
+  title: Sidebar
   description: |
     This is a fully featured blog that supports categories,
     tags, series, and pagination. Even this sidebar offers 
@@ -27,7 +26,7 @@ sidebar:
 
 # set up common front matter for all pages inside blog/
 cascade:
-  author: "The R Markdown Team @RStudio"
+  author: "Fabrício Almeida-Silva"
   show_author_byline: true
   show_post_date: true
   show_disqus_comments: false # see disqusShortname in site config
