@@ -1,7 +1,9 @@
 ---
 title: Contact
-name: Contact Us Form
-description: "Want to contact me? Send me a message."
+name: Contact Me Form
+description: |
+  Want to contact me? Send me a message. <br />
+  You can also write me an email: fabricio_almeidasilva@hotmail.com
 date: 2021-06-08
 draft: false
 url: contact
