@@ -130,12 +130,18 @@ enableEmoji = true
     title = "Teaching"
     url = "/teaching/"
     weight = 5
+    
+  [[menu.header]]
+    name = "CV"
+    title = "CV"
+    url = "/cv/"
+    weight = 6
 
   [[menu.header]]
     name = "Blog"
     title = "Blog"
     url = "/blog/"
-    weight = 6
+    weight = 7
 
   # Configure footer
   [[menu.footer]]
