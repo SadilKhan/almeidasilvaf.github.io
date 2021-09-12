@@ -19,7 +19,7 @@ links:
  - icon: globe
    icon_pack: fab
    name: Web app
-   url: https://github.com/almeidasilvaf/soyfungigcn.venanciogroup.uenf.br
+   url: https://soyfungigcn.venanciogroup.uenf.br
 ---
 
 ## Summary
