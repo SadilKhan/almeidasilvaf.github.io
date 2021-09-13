@@ -24,4 +24,4 @@ links:
 
 ## Summary
 
-SoyFungiGCN is an R package that contains a Shiny app to let users explore a gene coexpression network inferred from RNA-seq data of soybean tissues infected with phytopathogenic fungi. The Shiny app is also available online at https://github.com/almeidasilvaf/soyfungigcn.venanciogroup.uenf.br.
+SoyFungiGCN is an R package that contains a Shiny app to let users explore a gene coexpression network inferred from RNA-seq data of soybean tissues infected with phytopathogenic fungi. The Shiny app is also available online at https://soyfungigcn.venanciogroup.uenf.br.
