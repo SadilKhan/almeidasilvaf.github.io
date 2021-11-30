@@ -1,19 +1,19 @@
 ---
 title: "Pathogenesis-related protein 1 (PR-1) genes in soybean: genome-wide identification, structural analysis and expression profiling under multiple biotic and abiotic stresses"
 
-date: 2021-03-29
-event: 'BioRxiv'
+date: 2022-01-30
+event: 'Gene'
 show_post_time: false
 excerpt: |
-  Authors: Almeida-Silva, F., Venancio, T. M. (2021). <br />
-  Journal: BioRxiv (preprint) <br />
-  DOI: [10.1101/2021.03.27.437342](https://doi.org/10.1101/2021.03.27.437342)
+  Authors: Almeida-Silva, F., Venancio, T. M. (2022). <br />
+  Journal: Gene <br />
+  DOI: [10.1016/j.gene.2021.146013](https://doi.org/10.1016/j.gene.2021.146013)
 links:
 - icon: newspaper
   icon_pack: fas
   name: publication
-  url: https://doi.org/10.1101/2021.03.27.437342
-event_url: https://doi.org/10.1101/2021.03.27.437342
+  url: https://doi.org/10.1016/j.gene.2021.146013
+event_url: https://doi.org/10.1016/j.gene.2021.146013
 author: "Fabrício Almeida-Silva"
 draft: false
 # layout options: single, single-sidebar
@@ -32,4 +32,4 @@ Plant pathogenesis-related (PR) proteins are a large group of proteins, classifi
 
 # Citation
 
-Almeida-Silva, F., Venancio, T. M. (2021). Pathogenesis-related protein 1 (PR-1) genes in soybean: genome-wide identification, structural analysis and expression profiling under multiple biotic and abiotic stresses. bioRxiv. https://doi.org/10.1101/2021.03.27.437342 [doi: 10.1101/2021.03.27.437342](https://doi.org/10.1101/2021.03.27.437342)
+Almeida-Silva, F., Venancio, T. M. (2022). Pathogenesis-related protein 1 (PR-1) genes in soybean: genome-wide identification, structural analysis and expression profiling under multiple biotic and abiotic stresses. Gene, 809, 146013.. https://doi.org/10.1016/j.gene.2021.146013 [doi: 10.1016/j.gene.2021.146013](https://doi.org/10.1016/j.gene.2021.146013)

@@ -1,19 +1,19 @@
 ---
 title: "Integrating omics approaches to discover and prioritize candidate genes involved in oil biosynthesis in soybean"
 
-date: 2021-08-06
-event: 'BioRxiv'
+date: 2022-01-28
+event: 'Gene'
 show_post_time: false
 excerpt: |
-  Authors: Turquetti-Moraes, D. K., Moharana, K. C., Almeida-Silva, F., Pedrosa-Silva, F., Venancio, T. M. (2021). <br />
-  Journal: BioRxiv (preprint) <br />
-  DOI: [10.1101/2021.08.05.455283](https://doi.org/10.1101/2021.08.05.455283)
+  Authors: Turquetti-Moraes, D. K., Moharana, K. C., Almeida-Silva, F., Pedrosa-Silva, F., Venancio, T. M. (2022). <br />
+  Journal: Gene <br />
+  DOI: [10.1016/j.gene.2021.145976](https://doi.org/10.1016/j.gene.2021.145976)
 links:
 - icon: newspaper
   icon_pack: fas
   name: publication
-  url: https://doi.org/10.1101/2021.08.05.455283
-event_url: https://doi.org/10.1101/2021.08.05.455283
+  url: https://doi.org/10.1016/j.gene.2021.145976
+event_url: https://doi.org/10.1016/j.gene.2021.145976
 author: "Fabrício Almeida-Silva"
 draft: false
 # layout options: single, single-sidebar
@@ -34,4 +34,4 @@ Soybean is one of the major sources of edible protein and oil. Oil content is a 
 
 # Citation
 
-Turquetti-Moraes, D. K., Moharana, K. C., Almeida-Silva, F., Pedrosa-Silva, F., Venancio, T. M. (2021). Integrating omics approaches to discover and prioritize candidate genes involved in oil biosynthesis in soybean. bioRxiv. [doi: 10.1101/2021.08.05.455283](https://doi.org/10.1101/2021.08.05.455283)
+Turquetti-Moraes, D. K., Moharana, K. C., Almeida-Silva, F., Pedrosa-Silva, F., Venancio, T. M. (2022). Integrating omics approaches to discover and prioritize candidate genes involved in oil biosynthesis in soybean. Gene, 808, 145976. [doi: 10.1016/j.gene.2021.145976](https://doi.org/10.1016/j.gene.2021.145976)

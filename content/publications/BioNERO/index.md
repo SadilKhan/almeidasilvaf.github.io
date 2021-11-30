@@ -6,14 +6,14 @@ event: 'BioRxiv'
 show_post_time: false
 excerpt: |
   Authors: Almeida-Silva, F., Venancio, T. M. (2021). <br />
-  Journal: BioRxiv (preprint) <br />
-  DOI: [10.1101/2021.04.10.439287](https://doi.org/10.1101/2021.04.10.439287)
+  Journal: Functional and Integrative Genomics <br />
+  DOI: [10.1007/s10142-021-00821-9](https://doi.org/10.1007/s10142-021-00821-9)
 links:
 - icon: newspaper
   icon_pack: fas
   name: publication
-  url: https://doi.org/10.1101/2021.04.10.439287
-event_url: https://doi.org/10.1101/2021.04.10.439287
+  url: https://doi.org/10.1007/s10142-021-00821-9
+event_url: https://doi.org/10.1007/s10142-021-00821-9
 author: "Fabrício Almeida-Silva"
 draft: false
 # layout options: single, single-sidebar
@@ -34,4 +34,4 @@ Availability and implementation <br /> The package is available at Bioconductor 
 
 # Citation
 
-Almeida-Silva, F., Venancio, T. M. (2021). BioNERO: an all-in-one R/Bioconductor package for comprehensive and easy biological network reconstruction. bioRxiv. [doi: 10.1101/2021.04.10.439287](https://doi.org/10.1101/2021.04.10.439287)
+Almeida-Silva, F., Venancio, T. M. (2021). BioNERO: an all-in-one R/Bioconductor package for comprehensive and easy biological network reconstruction. Functional and Integrative Genomics. [doi: 10.1007/s10142-021-00821-9](https://doi.org/10.1007/s10142-021-00821-9)

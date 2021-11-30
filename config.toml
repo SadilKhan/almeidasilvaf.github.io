@@ -94,6 +94,10 @@ enableEmoji = true
       icon      = "researchgate" # icon name without the 'fa-'
       icon_pack = "ai"
       url       = "https://www.researchgate.net/profile/Fabricio-Almeida-Silva"
+  [[params.social]]
+      icon      = "envelope" # icon name without the 'fa-'
+      icon_pack = "fas"
+      url       = "/contact/"
 
 [taxonomies]
   category = "categories"
