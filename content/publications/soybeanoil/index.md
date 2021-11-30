@@ -1,7 +1,7 @@
 ---
 title: "Integrating omics approaches to discover and prioritize candidate genes involved in oil biosynthesis in soybean"
 
-date: 2022-01-28
+date: 2021-09-27
 event: 'Gene'
 show_post_time: false
 excerpt: |

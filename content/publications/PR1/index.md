@@ -1,7 +1,7 @@
 ---
 title: "Pathogenesis-related protein 1 (PR-1) genes in soybean: genome-wide identification, structural analysis and expression profiling under multiple biotic and abiotic stresses"
 
-date: 2022-01-30
+date: 2021-10-13
 event: 'Gene'
 show_post_time: false
 excerpt: |
