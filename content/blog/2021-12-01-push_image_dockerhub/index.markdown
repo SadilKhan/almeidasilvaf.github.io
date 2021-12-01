@@ -1,0 +1,67 @@
+---
+title: "Pushing Docker images to Docker Hub"
+excerpt: "Keeping your images in a Docker Hub repo will make your life easier"
+date: 2021-03-01
+author: "Fabrício Almeida-Silva"
+draft: false
+# layout options: single, single-sidebar
+layout: single
+categories:
+- project management
+- bioinformatics
+- docker
+- virtualization
+- reproducible research
+---
+
+## Pushing Docker images to Docker Hub
+
+This post assumes you already have an account on Docker Hub. If you don't, [sign up for free](https://hub.docker.com/) before going any further. 
+
+Once you have a Docker Hub account, log in and **create the repository** where you want to store the image. You can do that by clicking the **Create Repository** button.
+
+<img src="dockerhub_create_repo.png" width="472" style="display: block; margin: auto;" />
+
+### Building the image
+
+To push an image to Docker Hub, you will need to have it on your machine. An image can be built from instructions in a **Dockerfile** or using Docker Compose. Personally, I like to create images from Dockerfiles, where I define my desired OS with all softwares and packages I need. Assuming you alrady have a Dockerfile, `cd` to the directory where the Dockerfile is and run:
+
+
+```bash
+docker build -t username/reponame .
+```
+
+Here, `username` and `reponame` are your Docker Hub's user name and the name of the repository where you want to store the image.
+
+### Pushing to Docker Hub
+
+To push your image, you must be logged in. To log in, run:
+
+
+```bash
+docker login
+```
+
+You will be asked to type your **user name** and **password**, and then you're all set. Finally, push the image with:
+
+
+```bash
+docker push username/reponame:tag
+```
+
+Note that the `:tag` is not mandatory. If you omit it, a tag **latest** will be automatically assigned. You would want to assign a custom tag if you're pushing a specific version of your image. For example, suppose I want to push the version 2.0 of an image to my [soyfungigcn](https://hub.docker.com/repository/docker/almeidasilvaf/soyfungigcn) repo. To do that, I would run:
+
+
+```bash
+docker push almeidasilvaf/soyfungigcn:2.0
+```
+
+And that's it! In the future, if you want to use that same image on a different machine, all you need to do is run:
+
+
+```bash
+docker pull username/reponame
+```
+
+This will download the latest version of the image to your machine. You can also specify a specific version to download by setting a `:tag` after the repository name.
+
