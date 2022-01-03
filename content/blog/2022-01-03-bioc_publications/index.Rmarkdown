@@ -1,0 +1,172 @@
+---
+title: "Where can I publish a paper describing my Bioconductor package?"
+excerpt: "Check out where Bioc developers have published their papers"
+date: 2022-01-02
+author: "Fabrício Almeida-Silva"
+draft: false
+# layout options: single, single-sidebar
+layout: single
+categories:
+- bioinformatics
+- reproducible research
+- bioconductor
+- scientific writing
+- rstats
+---
+
+## Motivation
+
+When I developed [BioNERO](https://bioconductor.org/packages/release/bioc/html/BioNERO.html), my first R/Bioconductor package, I didn't know to which journals I could submit the paper describing it. Since then, I've seen many other R developers that have faced the same issue. To help solve this problem, here I will teach you how to do some web scraping to find out the main journals where Bioc developers publish papers describing their packages.
+
+## Extracting citation information from packages' landing pages
+
+All Bioconductor packages have a landing page where there is a citation field. This field is created from a CITATION file inside the package directory or automatically from information in the DESCRIPTION file. First, let's write two functions to helper functions:
+
+- `get_bioc_citation`, a function that scrapes packages' landing pages to get citation information.
+- `create_citation_table`, a function that created a tidy data frame containing package name, journal where the paper is published (if that is the case), and year of publication.
+
+```{r functions}
+#' Extract citation from Bioconductor landing page
+#'
+#' @param package Character of package name.
+#'
+#' @return Character of citation text.
+#' @noRd
+#' @importFrom rvest html_elements html_text2
+#' @importFrom httr GET content
+get_bioc_citation <- function(package = NULL) {
+    url <- paste0("https://bioconductor.org/packages/release/bioc/citations/",
+                  package, "/citation.html")
+    request <- httr::GET(url)
+    parsed_page <- httr::content(request, as = "parsed", encoding = "UTF-8")
+    if("xml_node" %in% class(parsed_page)) {
+        citations <- rvest::html_elements(parsed_page, "p")
+        citations <- rvest::html_text2(citations)
+    } else {
+        citations <- NA
+    }
+    return(citations)
+}
+
+#' Create a table of citations for each Bioc package
+#'
+#' @param packages Character vector of package names.
+#'
+#' @return A data frame with the following variables:
+#' \describe{
+#'   \item{Package}{Chaarcter of package name.}
+#'   \item{Journal}{Character of journal name.}
+#'   \item{Year}{Numeric of journal year.}
+#' }
+#' @noRd
+#' @importFrom stringr str_detect str_extract
+create_citation_table <- function(packages = NULL) {
+    table <- Reduce(rbind, lapply(packages, function(x) {
+        df <- data.frame(Citation = get_bioc_citation(x))
+        df$Package <- x
+        return(df)
+    }))
+    
+    year <- "([0-9]{4})"
+    table$Year <- as.numeric(stringr::str_extract(table$Citation, year))
+    journal <- gsub('.*” ', '', table$Citation)
+    journal <- gsub("\\*{3} ", "", journal)
+    journal <- gsub("(,|\\.).*", "", journal)
+    table$Journal <- journal
+    idx <- which(stringr::str_detect(table$Citation, "github|R package version"))
+    table$Journal[idx] <- NA
+    table <- table[, c("Package", "Journal", "Year")]
+    table <- table[!is.na(table$Journal), ]
+    return(table)
+}
+```
+
+Now, we can create the citation table.
+
+```{r message=FALSE, warning=FALSE, cache = TRUE}
+suppressPackageStartupMessages(library(tidyverse))
+
+# List available Bioc packages
+bioc_repo <- "https://www.bioconductor.org/packages/release/bioc"
+bioc_pkgs <- available.packages(repos = bioc_repo)[, "Package"]
+
+# Scrape CITATION field from Bioc landing pages
+citation_table <- create_citation_table(bioc_pkgs)
+```
+
+## Summary stats
+
+Now, let's count the frequency of packages in each journal and show the top 20 journals based on highest article count.
+
+```{r}
+citation_table %>%
+    count(Journal) %>%
+    arrange(-n) %>%
+    slice_head(n = 20)
+```
+
+We can see that there are some issues, such as different names for the same journal, the preprint server bioRxiv listed as a journal, and a weird 'doi' journal that is likely due to manual insertion of citation info. Let's fix them.
+
+```{r}
+citation_stats <- citation_table %>%
+    mutate(Journal = str_replace_all(
+        Journal, c("Nat$" = "Nature",
+                   "Res$" = "Research",
+                   " \\(Oxford.*" = "",
+                   "bioinformatics" = "Bioinformatics"))
+    ) %>%
+    count(Journal) %>%
+    arrange(-n) %>%
+    filter(!Journal %in% c("bioRxiv", "BioRxiv", "doi: 10")) %>%
+    slice_head(n = 20)
+citation_stats
+```
+
+Exploring it visually:
+
+```{r fig.width=7.5, fig.height=7}
+bioc_logo <- png::readPNG(
+    here::here("content", "blog", 
+               "2022-01-03-bioc_publications", 
+               "featured-bioc.png"), 
+    native = TRUE)
+
+last_updated <- format(Sys.Date(), "%Y-%m-%d")
+
+ggplot(citation_stats, aes(x = n, y = reorder(Journal, n))) +
+    geom_col() +
+    geom_text(aes(label = n), hjust = -0.3) +
+    xlim(0, 300) +
+    labs(title = "Where are papers associated with BioC packages published?",
+         subtitle = paste0("Last updated: ", last_updated),
+         x = "Number of papers", y = "") +
+    theme_bw() +
+    patchwork::inset_element(bioc_logo,
+                             left = 0.5,
+                             bottom = 0.55,
+                             right = 0.95,
+                             top = 0.3) +
+    theme_void()
+```
+
+And voilà! In case you want to explore the whole table, here it is:
+
+```{r echo=FALSE}
+citation_table %>%
+    mutate(Journal = str_replace_all(
+        Journal, c("Nat$" = "Nature",
+                   "Res$" = "Research",
+                   " \\(Oxford.*" = "",
+                   "bioinformatics" = "Bioinformatics"))
+    ) %>%
+    count(Journal) %>%
+    arrange(-n) %>%
+    filter(!Journal %in% c("bioRxiv", "BioRxiv", "doi: 10")) %>%
+    DT::datatable()
+```
+
+## Session information
+
+```{r}
+sessionInfo()
+```

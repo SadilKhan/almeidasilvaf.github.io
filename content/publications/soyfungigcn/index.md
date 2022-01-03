@@ -6,14 +6,14 @@ event: 'BioRxiv'
 show_post_time: false
 excerpt: |
   Authors: Almeida-Silva, F., Venancio, T. M. (2021). <br />
-  Journal: BioRxiv (preprint) <br />
-  DOI: [10.1101/2021.08.31.458388](https://doi.org/10.1101/2021.08.31.458388)
+  Journal: Scientific Reports <br />
+  DOI: [10.1038/s41598-021-03864-x](https://doi.org/10.1038/s41598-021-03864-x)
 links:
 - icon: newspaper
   icon_pack: fas
   name: publication
-  url: https://doi.org/10.1101/2021.08.31.458388
-event_url: https://doi.org/10.1101/2021.08.31.458388
+  url: https://doi.org/10.1038/s41598-021-03864-x
+event_url: https://doi.org/10.1038/s41598-021-03864-x
 author: "Fabrício Almeida-Silva"
 draft: false
 # layout options: single, single-sidebar
@@ -35,4 +35,4 @@ Soybean is one of the most important legume crops worldwide. However, soybean yi
 
 # Citation
 
-Almeida-Silva, F., Venancio, T. M. (2021). Integration of genome-wide association studies and gene coexpression networks unveils promising soybean resistance genes against five common fungal pathogens. bioRxiv. [doi: 10.1101/2021.08.31.458388](https://doi.org/10.1101/2021.08.31.458388)
+Almeida-Silva, F., Venancio, T.M. (2021). Integration of genome-wide association studies and gene coexpression networks unveils promising soybean resistance genes against five common fungal pathogens. [doi: 10.1101/2021.08.31.458388](https://doi.org/10.1038/s41598-021-03864-x)

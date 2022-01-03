@@ -1,7 +1,7 @@
 ---
 title: "Pushing Docker images to Docker Hub"
 excerpt: "Keeping your images in a Docker Hub repo will make your life easier"
-date: 2021-03-01
+date: 2021-12-01
 author: "Fabrício Almeida-Silva"
 draft: false
 # layout options: single, single-sidebar
