@@ -16,14 +16,15 @@ categories:
 
 ## Motivation
 
-When I developed [BioNERO](https://bioconductor.org/packages/release/bioc/html/BioNERO.html), my first R/Bioconductor package, I didn't know to which journals I could submit the paper describing it. Since then, I've seen many other R developers that have faced the same issue. To help solve this problem, here I will teach you how to do some web scraping to find out the main journals where Bioc developers publish papers describing their packages.
+When I developed [BioNERO](https://bioconductor.org/packages/release/bioc/html/BioNERO.html), my first R/Bioconductor package, I didn't know to which journals I could submit the paper describing it. Since then, I've seen many other R developers that have faced the same issue. To help solve this problem, here I will guide you on how to do some web scraping to find out the main journals where Bioc developers publish papers describing their packages.
 
 ## Extracting citation information from packages' landing pages
 
-All Bioconductor packages have a landing page where there is a citation field. This field is created from a CITATION file inside the package directory or automatically from information in the DESCRIPTION file. First, let's write two functions to helper functions:
+All Bioconductor packages have a landing page where there is a citation field. This field is created from a CITATION file inside the package directory or automatically from information in the DESCRIPTION file. First, let's write two helper functions:
 
 - `get_bioc_citation`, a function that scrapes packages' landing pages to get citation information.
-- `create_citation_table`, a function that created a tidy data frame containing package name, journal where the paper is published (if that is the case), and year of publication.
+- `create_citation_table`, a function that creates a tidy data frame containing package name, journal where the paper is published (if that is the case), and year of publication.
+- `process_titles`, a function to process journal titles and remove inconsistencies across packages.
 
 ```{r functions}
 #' Extract citation from Bioconductor landing page
@@ -57,6 +58,7 @@ get_bioc_citation <- function(package = NULL) {
 #'   \item{Package}{Chaarcter of package name.}
 #'   \item{Journal}{Character of journal name.}
 #'   \item{Year}{Numeric of journal year.}
+#'   \item{Citation}{Character of full citation.}
 #' }
 #' @noRd
 #' @importFrom stringr str_detect str_extract
@@ -75,23 +77,108 @@ create_citation_table <- function(packages = NULL) {
     table$Journal <- journal
     idx <- which(stringr::str_detect(table$Citation, "github|R package version"))
     table$Journal[idx] <- NA
-    table <- table[, c("Package", "Journal", "Year")]
+    table <- table[, c("Package", "Journal", "Year", "Citation")]
     table <- table[!is.na(table$Journal), ]
     return(table)
+}
+
+#' Process journal titles
+#'
+#' @param citation_table Data frame created with \code{create_citation_table}.
+#'
+#' @return The same data frame as in \strong{citation_table}, but with
+#' processed titles in the variable 'Journal'.
+#' @noRd
+#' @importFrom dplyr mutate filter
+#' @importFrom stringr str_to_title str_replace_all str_detect str_trim
+process_titles <- function(citation_table = NULL) {
+    pcit <- dplyr::mutate(citation_table, 
+                          Journal = stringr::str_to_title(Journal))
+    
+    sagmb <- "Statistical Applications In Genetics And Molecular Biology"
+    pnas <- "Proceedings Of The National Academy Of Sciences Of The United States Of America"
+    ijms <- "International Journal Of Molecular Sciences"
+    cmpbiomed <- "Computer Methods And Programs In Biomedicine"
+    jcompbio <- "Journal Of Computational Biology"
+    pcit <- mutate(pcit, Journal = stringr::str_replace_all(
+        Journal, c("^Nat$" = "Nature",
+                   "Res$" = "Research",
+                   " \\(Oxford.*" = "",
+                   "Bmc" = "BMC",
+                   "Plos" = "PLoS",
+                   "Rna" = "RNA",
+                   "^Nucl$" = "Nucleic Acids Research",
+                   "^Genome Bio$" = "Genome Biology",
+                   "^Genome Biol$" = "Genome Biology",
+                   "^F1000$" = "F1000Research",
+                   "F1000research" = "F1000Research",
+                   "F1000res" = "F1000Research",
+                   "F1000 Research" = "F1000Research",
+                   "Stat Appl Genet Mol Biol" = sagmb,
+                   "Sagmb" = sagmb,
+                   "Proceedings Of The National Academy of Sciences" = pnas,
+                   "Proc Natl Acad Sci Usa" = pnas,
+                   "Pnas" = pnas,
+                   "Comput Biol" = "Computational Biology",
+                   "Computat Biol" = "Computational Biology",
+                   "Physiol Genomics" = "Physiological Genomics",
+                   "Oxford " = "",
+                   "Bioinformatics Journal" = "Bioinformatics",
+                   " \\(.*\\)" = "",
+                   "Nat Meth" = "Nature Methods",
+                   "Nat Commun" = "Nature Communications",
+                   "Nat Biotech" = "Nature Biotechnology",
+                   "Nat Biotechnol" = "Nature Biotechnology",
+                   "Nar Genomics And Bioinformatics" = "Nucleic Acids Research",
+                   "Mol Cell Proteomics" = "Molecular & Cellular Proteomics",
+                   "Methods Inf Med" = "Methods Of Information In Medicine",
+                   "Jco.*" = "Journal Of Clinical Oncology",
+                   "Jasa" = "Journal Of the American Statistical Association",
+                   "J Proteomics" = "Journal Of Proteomics",
+                   "J Comput Biol" = jcompbio,
+                   "J Computational Biology" = jcompbio,
+                   "J Mach Learn" = "Journal Of Machine Learning",
+                   "Int J Mol Sci" = ijms,
+                   "Comput Methods Programs Biomed" = cmpbiomed,
+                   "Syst Biol" = "Systems Biology",
+                   "Mol Systems Biology" = "Molecular Systems Biology",
+                   "Algorithms Mol Biol" = "Algorithms For Molecular Biology"
+                   ))
+    )
+    pcit <- mutate(pcit, Journal = stringr::str_trim(Journal))
+    remove <- "Biorxiv|Arxiv|Doi|Preprint|Submitted|In Preparation|Error|Http"
+    pcit <- dplyr::filter(pcit, 
+                          !stringr::str_detect(Journal, remove))
+    
+    return(pcit)
 }
 ```
 
 Now, we can create the citation table.
 
-```{r message=FALSE, warning=FALSE, cache = TRUE}
+```{r message=FALSE, warning=FALSE}
 suppressPackageStartupMessages(library(tidyverse))
 
 # List available Bioc packages
 bioc_repo <- "https://www.bioconductor.org/packages/release/bioc"
 bioc_pkgs <- available.packages(repos = bioc_repo)[, "Package"]
+```
 
+```{r eval=FALSE}
 # Scrape CITATION field from Bioc landing pages
 citation_table <- create_citation_table(bioc_pkgs)
+```
+
+```{r echo=FALSE}
+# The above object 'citation_table' was saved for practical issues
+load(here::here("content", "blog", 
+                "2022-01-03-bioc_publications", 
+                "citation_table.rda"))
+```
+
+```{r}
+# Process journal names
+citation_table <- process_titles(citation_table)
 ```
 
 ## Summary stats
@@ -99,26 +186,11 @@ citation_table <- create_citation_table(bioc_pkgs)
 Now, let's count the frequency of packages in each journal and show the top 20 journals based on highest article count.
 
 ```{r}
-citation_table %>%
-    count(Journal) %>%
-    arrange(-n) %>%
-    slice_head(n = 20)
-```
-
-We can see that there are some issues, such as different names for the same journal, the preprint server bioRxiv listed as a journal, and a weird 'doi' journal that is likely due to manual insertion of citation info. Let's fix them.
-
-```{r}
 citation_stats <- citation_table %>%
-    mutate(Journal = str_replace_all(
-        Journal, c("Nat$" = "Nature",
-                   "Res$" = "Research",
-                   " \\(Oxford.*" = "",
-                   "bioinformatics" = "Bioinformatics"))
-    ) %>%
     count(Journal) %>%
     arrange(-n) %>%
-    filter(!Journal %in% c("bioRxiv", "BioRxiv", "doi: 10")) %>%
     slice_head(n = 20)
+
 citation_stats
 ```
 
@@ -153,15 +225,8 @@ And voilà! In case you want to explore the whole table, here it is:
 
 ```{r echo=FALSE}
 citation_table %>%
-    mutate(Journal = str_replace_all(
-        Journal, c("Nat$" = "Nature",
-                   "Res$" = "Research",
-                   " \\(Oxford.*" = "",
-                   "bioinformatics" = "Bioinformatics"))
-    ) %>%
     count(Journal) %>%
     arrange(-n) %>%
-    filter(!Journal %in% c("bioRxiv", "BioRxiv", "doi: 10")) %>%
     DT::datatable()
 ```
 
