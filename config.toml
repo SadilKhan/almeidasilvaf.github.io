@@ -4,7 +4,7 @@ languageCode = "en"
 title = "Fabrício's personal website"
 author = "Fabrício Almeida-Silva"
 copyright = "" # set to override the auto generated copyright using org info and now year
-googleAnalytics = "G-4M49R7N8QJ"
+googleAnalytics = "G-9TMPT34HZ4" # Google Analytics 4
 disqusShortname = ""
 metaDataFormat = "yaml"
 footnoteReturnLinkContents = "&#8617;" # ↩
@@ -30,6 +30,7 @@ enableEmoji = true
 [params]
   orgName = "Fabrício Almeida-Silva"
   orgLocal = ""
+  GoogleAnalyticsID = "G-9TMPT34HZ4"
   description = "Biotechnology | Bioinformatics | Evolution"
   favicon = "/img/logo_tree_graph.png"
   logo = "/img/logo_tree_graph.png"
