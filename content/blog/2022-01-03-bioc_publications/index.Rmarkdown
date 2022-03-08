@@ -164,22 +164,14 @@ bioc_repo <- "https://www.bioconductor.org/packages/release/bioc"
 bioc_pkgs <- available.packages(repos = bioc_repo)[, "Package"]
 ```
 
-```{r eval=FALSE}
+```{r citation_table}
 # Scrape CITATION field from Bioc landing pages
 citation_table <- create_citation_table(bioc_pkgs)
-```
 
-```{r echo=FALSE}
-# The above object 'citation_table' was saved for practical issues
-load(here::here("content", "blog", 
-                "2022-01-03-bioc_publications", 
-                "citation_table.rda"))
-```
-
-```{r}
 # Process journal names
 citation_table <- process_titles(citation_table)
 ```
+
 
 ## Summary stats
 
@@ -196,7 +188,7 @@ citation_stats
 
 Exploring it visually:
 
-```{r fig.width=7.5, fig.height=7}
+```{r fig.width=9, fig.height=7}
 bioc_logo <- png::readPNG(
     here::here("content", "blog", 
                "2022-01-03-bioc_publications", 
@@ -204,6 +196,8 @@ bioc_logo <- png::readPNG(
     native = TRUE)
 
 last_updated <- format(Sys.Date(), "%Y-%m-%d")
+xmax <- max(citation_stats$n) + 30
+xmax <- round(xmax / 10) * 10
 
 ggplot(citation_stats, aes(x = n, y = reorder(Journal, n))) +
     geom_col() +
@@ -215,9 +209,9 @@ ggplot(citation_stats, aes(x = n, y = reorder(Journal, n))) +
     theme_bw() +
     patchwork::inset_element(bioc_logo,
                              left = 0.5,
-                             bottom = 0.55,
+                             top = 0.55,
                              right = 0.95,
-                             top = 0.3) +
+                             bottom = 0.3) +
     theme_void()
 ```
 

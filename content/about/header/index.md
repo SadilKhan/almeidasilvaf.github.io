@@ -8,5 +8,5 @@ headline: |
 
 <!-- this is a subheadline -->
 
-I am a Master's candidate in Plant Biotechnology at the State University of Northern Rio de Janeiro (UENF), in Brazil. I am a computational biologist interested in using and developing algorithms to study the evolution of plant genomes and gene networks. I am particularly interested in investigating how polyploidization events have shaped plant evolution, and how gene duplication can provide new material for genetic innovation in plant taxa.
+I am a PhD student in Bioinformatics at Ghent University (Belgium), and I conduct my research at VIB-UGent Center for Plant Systems Biology. I am a biologist with a Master's degree in Plant Biotechnology. I am a computational biologist interested in using and developing algorithms to study the evolution of plant genomes and gene networks. I am particularly interested in investigating how polyploidization events have shaped plant evolution, and how gene duplication can provide new material for genetic innovation in plant taxa.
 

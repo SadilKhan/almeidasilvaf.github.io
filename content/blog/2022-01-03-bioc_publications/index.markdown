@@ -21,7 +21,7 @@ categories:
 <link href="{{< blogdown/postref >}}index_files/dt-core/css/jquery.dataTables.min.css" rel="stylesheet" />
 <link href="{{< blogdown/postref >}}index_files/dt-core/css/jquery.dataTables.extra.css" rel="stylesheet" />
 <script src="{{< blogdown/postref >}}index_files/dt-core/js/jquery.dataTables.min.js"></script>
-<link href="{{< blogdown/postref >}}index_files/crosstalk/css/crosstalk.css" rel="stylesheet" />
+<link href="{{< blogdown/postref >}}index_files/crosstalk/css/crosstalk.min.css" rel="stylesheet" />
 <script src="{{< blogdown/postref >}}index_files/crosstalk/js/crosstalk.min.js"></script>
 
 ## Motivation
@@ -177,9 +177,7 @@ bioc_pkgs <- available.packages(repos = bioc_repo)[, "Package"]
 ``` r
 # Scrape CITATION field from Bioc landing pages
 citation_table <- create_citation_table(bioc_pkgs)
-```
 
-``` r
 # Process journal names
 citation_table <- process_titles(citation_table)
 ```
@@ -199,9 +197,9 @@ citation_stats
 
     ##                                                       Journal   n
     ## 1                                              Bioinformatics 272
-    ## 2                                          BMC Bioinformatics  92
-    ## 3                                      Nucleic Acids Research  66
-    ## 4                                              Genome Biology  54
+    ## 2                                          BMC Bioinformatics  90
+    ## 3                                      Nucleic Acids Research  67
+    ## 4                                              Genome Biology  55
     ## 5                                               F1000Research  31
     ## 6                                              Nature Methods  30
     ## 7                                                BMC Genomics  23
@@ -229,6 +227,8 @@ bioc_logo <- png::readPNG(
     native = TRUE)
 
 last_updated <- format(Sys.Date(), "%Y-%m-%d")
+xmax <- max(citation_stats$n) + 30
+xmax <- round(xmax / 10) * 10
 
 ggplot(citation_stats, aes(x = n, y = reorder(Journal, n))) +
     geom_col() +
@@ -240,18 +240,18 @@ ggplot(citation_stats, aes(x = n, y = reorder(Journal, n))) +
     theme_bw() +
     patchwork::inset_element(bioc_logo,
                              left = 0.5,
-                             bottom = 0.55,
+                             top = 0.55,
                              right = 0.95,
-                             top = 0.3) +
+                             bottom = 0.3) +
     theme_void()
 ```
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="720" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="864" />
 
 And voilà! In case you want to explore the whole table, here it is:
 
 <div id="htmlwidget-1" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","63","64","65","66","67","68","69","70","71","72","73","74","75","76","77","78","79","80","81","82","83","84","85","86","87","88","89","90","91","92","93","94","95","96","97","98","99","100","101","102","103","104","105","106","107","108","109","110","111","112","113","114","115","116","117","118","119","120","121","122","123","124","125","126","127","128","129","130","131","132","133","134","135","136","137","138","139","140","141","142","143","144","145","146","147","148","149","150","151","152","153","154","155","156","157","158","159","160","161","162","163","164","165","166","167","168","169","170","171","172","173","174","175","176","177","178","179","180","181","182","183","184","185","186","187","188","189","190","191","192","193","194","195","196","197","198","199","200","201"],["Bioinformatics","BMC Bioinformatics","Nucleic Acids Research","Genome Biology","F1000Research","Nature Methods","BMC Genomics","PLoS One","PLoS Computational Biology","Genome Research","Biostatistics","Nature Communications","Analytical Chemistry","Molecular Systems Biology","Nature","Nature Biotechnology","Molecular &amp; Cellular Proteomics","Statistical Applications In Genetics And Molecular Biology","Frontiers In Genetics","Journal Of Proteome Research","Nature Genetics","BMC Systems Biology","Journal Of Statistical Software","Briefings In Bioinformatics","Proceedings Of The National Academy Of Sciences","Proceedings Of The National Academy Of Sciences Of The United States Of America","Scientific Reports","Annals Of Applied Statistics","Biometrics","Cell Reports","Cytometry Part A","Johns Hopkins University","Molecular Biology And Evolution","Aibar S","Algorithms For Molecular Biology","Analytica Chimica Acta","Animal Genetics","Biomed Research International","Clinical Cancer Research","Computer Methods And Programs In Biomedicine","Epigenetics &amp; Chromatin","Epigenomics","Genomics","Gigascience","Human Mutation","International Journal Of Molecular Sciences","J","Journal Of Biomedical Informatics","Journal Of Clinical Oncology","Journal Of Machine Learning Research","Luo X","Methods","Methods In Ecology And Evolution","Methods In Molecular Biology","Microbiome","Mol","Nature Protocols","Omics: A Journal Of Integrative Biology","Peerj","Shokoohi F","Source Code For Biology And Medicine","The Journal Of Open Source Software","","10","Aging","Aistats","Algorithmica","American Journal Of Human Genetics","Ann","Applications In Genetics And Molecular Biology","Applications In Plant Sciences","Baek M","Bbagrm","Bhuva Dd","Biochemical And Biophysical Research Communications","Biochimica Et Biophysica Acta - Bioenergetics","Bioconductor Package","Bioinformatics And Biomedical Engineering","Bioinformation","Biology Direct","Bionformatics","BMC Biodata Mining","BMC Cancer","BMC Epigenetics &amp; Chromatin","BMC Infectious Diseases","BMC Medical Genomics","Boileau P","Bolstad Bm","Cancer Informatics","Cancer Research","Cell","Cell Reports Methods","Cell Systems","Chromosome Research","Clinical Epigenetics","Computers In Biology And Medicine","Cuklina J","Current Protocols In Bioinformatics","Dalmolin","Data Integration Life Sci","Database","Developmental Dynamics","Elife","Embnet","Epigenesys - Bioinformatics Protocol","Epigenetics","Epigenetics Chromatin","Fraley C","Front","Frontiers In Molecular Biosciences","Frontiers In Oncology","Genes","Genes &amp; Genomics","Genetics","Genome Biology And Evolution","Genome Medicine","Haibe-Kains B","Hayden N","Henriques D","In Gentleman R","In Lee T","In Mathé E","In Proc","In Schölkopf B","International Journal Of Epidemiology","Iscience","J R Stat Soc Ser C-Appl Stat","Jain N","Japanese J Appl Stat","Journal","Journal Of Alzheimer's Disease","Journal Of Applied Statistics","Journal Of Bioinformatics And Computational Biology","Journal Of Biological Rhythms","Journal Of Cachexia","Journal Of Clinical Bioinformatics","Journal Of Computational And Graphical Statistics","Journal Of Computational Biology","Journal Of Immunological Methods","Journal Of Mass Spectrometry","Journal Of Open Source Software","Journal Of Proteomics","Journal Of Statistical Planning And Infererence","Journal Of the American Statistical Association","Journal Of The International Biometric Society","Journal Of The National Cancer Institute","Journal Of The Royal Statistical Society","Kim V","Kohl M","Kopp W","Lahti L","Lai W","Life Science Alliance","Mallick H","Marini F","Metabolomics","Methods Enzymol","Methods Of Information In Medicine","Molecular Biosystems","Molecular Cell","Nature Biotechnologynol","New Phytologist","Npj Systems Biology And Applications","Oncotarget","Patterns","Paulson Jn","Physiological Genomics","Plants","PLoS Comput","PLoS Genetics","Pollard Ks","Qg14","Raborn Rt","RNA Biology","Robertson Ds","Ruffieux Y","Schlosser P","Source Code Biol Med","Star Protocols","Stark R","Statistica Sinica","Stokowy T","Systems Biomedicine","Tba","Tcbb/Ieee","Technical Report 745","Technometrics","Terfve C","The American Journal Of Human Genetics","The Annals Of Applied Statistics","The Innovation","The Pharmacogenomics Journal","The Prostate","The R Journal","Under Review","University Of Regensburg","Wellcome Open Research","X","Yeung Ky","Zenkova D","Zhang Jd"],[272,92,66,54,31,30,23,20,19,13,11,10,9,8,8,8,7,7,6,6,6,5,5,4,4,4,4,3,3,3,3,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Journal<\/th>\n      <th>n<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","63","64","65","66","67","68","69","70","71","72","73","74","75","76","77","78","79","80","81","82","83","84","85","86","87","88","89","90","91","92","93","94","95","96","97","98","99","100","101","102","103","104","105","106","107","108","109","110","111","112","113","114","115","116","117","118","119","120","121","122","123","124","125","126","127","128","129","130","131","132","133","134","135","136","137","138","139","140","141","142","143","144","145","146","147","148","149","150","151","152","153","154","155","156","157","158","159","160","161","162","163","164","165","166","167","168","169","170","171","172","173","174","175","176","177","178","179","180","181","182","183","184","185","186","187","188","189","190","191","192","193","194","195","196","197","198","199","200"],["Bioinformatics","BMC Bioinformatics","Nucleic Acids Research","Genome Biology","F1000Research","Nature Methods","BMC Genomics","PLoS One","PLoS Computational Biology","Genome Research","Biostatistics","Nature Communications","Analytical Chemistry","Molecular Systems Biology","Nature","Nature Biotechnology","Molecular &amp; Cellular Proteomics","Statistical Applications In Genetics And Molecular Biology","Frontiers In Genetics","Journal Of Proteome Research","Nature Genetics","BMC Systems Biology","Journal Of Statistical Software","Scientific Reports","Briefings In Bioinformatics","Proceedings Of The National Academy Of Sciences","Proceedings Of The National Academy Of Sciences Of The United States Of America","Annals Of Applied Statistics","Biometrics","Cell Reports","Cytometry Part A","Epigenetics &amp; Chromatin","Genomics","Johns Hopkins University","Molecular Biology And Evolution","Peerj","Aibar S","Algorithms For Molecular Biology","Analytica Chimica Acta","Animal Genetics","Biomed Research International","Clinical Cancer Research","Computer Methods And Programs In Biomedicine","Epigenomics","Gigascience","Human Mutation","International Journal Of Molecular Sciences","J","Journal Of Biomedical Informatics","Journal Of Clinical Oncology","Journal Of Machine Learning Research","Luo X","Metabolites","Methods","Methods In Ecology And Evolution","Methods In Molecular Biology","Microbiome","Mol","Nature Protocols","Omics: A Journal Of Integrative Biology","Shokoohi F","Source Code For Biology And Medicine","The Journal Of Open Source Software","","10","Aging","Algorithmica","American Journal Of Human Genetics","Ann","Applications In Genetics And Molecular Biology","Applications In Plant Sciences","Baek M","Bbagrm","Bhuva Dd","Biochemical And Biophysical Research Communications","Biochimica Et Biophysica Acta - Bioenergetics","Bioconductor Package","Bioinformatics And Biomedical Engineering","Bioinformation","Biology Direct","Bionformatics","BMC Biodata Mining","BMC Cancer","BMC Epigenetics &amp; Chromatin","BMC Infectious Diseases","BMC Medical Genomics","Boileau P","Bolstad Bm","Cancer Informatics","Cancer Research","Cell","Cell Reports Methods","Cell Systems","Chromosome Research","Clinical Epigenetics","Computers In Biology And Medicine","Cuklina J","Current Protocols In Bioinformatics","Dalmolin","Data Integration Life Sci","Database","Developmental Dynamics","Elife","Embnet","Epigenesys - Bioinformatics Protocol","Epigenetics","Epigenetics Chromatin","Fraley C","Front","Frontiers In Molecular Biosciences","Frontiers In Oncology","Genes","Genes &amp; Genomics","Genetics","Genome Biology And Evolution","Genome Medicine","Haibe-Kains B","Hayden N","Henriques D","In Gentleman R","In Lee T","In Mathé E","In Proc","In Schölkopf B","International Journal Of Epidemiology","Iscience","J R Stat Soc Ser C-Appl Stat","Jain N","Japanese J Appl Stat","Journal","Journal Of Alzheimer's Disease","Journal Of Applied Statistics","Journal Of Bioinformatics And Computational Biology","Journal Of Biological Rhythms","Journal Of Cachexia","Journal Of Clinical Bioinformatics","Journal Of Computational And Graphical Statistics","Journal Of Computational Biology","Journal Of Immunological Methods","Journal Of Mass Spectrometry","Journal Of Open Source Software","Journal Of Proteomics","Journal Of Statistical Planning And Infererence","Journal Of the American Statistical Association","Journal Of The International Biometric Society","Journal Of The National Cancer Institute","Journal Of The Royal Statistical Society","Kim V","Kohl M","Kopp W","Lahti L","Lai W","Life Science Alliance","Mallick H","Marini F","Metabolomics","Methods Enzymol","Methods Of Information In Medicine","Molecular Biosystems","Molecular Cell","Nature Biotechnologynol","New Phytologist","Npj Systems Biology And Applications","Oncotarget","Patterns","Paulson Jn","Physiological Genomics","Plants","PLoS Comput","Pollard Ks","Qg14","Raborn Rt","RNA Biology","Robertson Ds","Ruffieux Y","Schlosser P","Source Code Biol Med","Star Protocols","Stark R","Statistica Sinica","Stokowy T","Systems Biomedicine","Tba","Tcbb/Ieee","Technical Report 745","Technometrics","Terfve C","The American Journal Of Human Genetics","The Annals Of Applied Statistics","The Innovation","The Pharmacogenomics Journal","The Prostate","The R Journal","Under Review","University Of Regensburg","Wellcome Open Research","X","Yeung Ky","Zenkova D","Zhang Jd"],[272,90,67,55,31,30,23,20,19,13,11,10,9,8,8,8,7,7,6,6,6,5,5,5,4,4,4,3,3,3,3,3,3,3,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Journal<\/th>\n      <th>n<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 
 ## Session information
 
@@ -259,40 +259,46 @@ And voilà! In case you want to explore the whole table, here it is:
 sessionInfo()
 ```
 
-    ## R version 4.1.0 (2021-05-18)
-    ## Platform: x86_64-apple-darwin17.0 (64-bit)
-    ## Running under: macOS High Sierra 10.13.6
+    ## R version 4.1.2 (2021-11-01)
+    ## Platform: x86_64-pc-linux-gnu (64-bit)
+    ## Running under: Ubuntu 20.04.4 LTS
     ## 
     ## Matrix products: default
-    ## BLAS:   /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRblas.dylib
-    ## LAPACK: /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRlapack.dylib
+    ## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0
+    ## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.9.0
     ## 
     ## locale:
-    ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+    ##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+    ##  [3] LC_TIME=de_BE.UTF-8        LC_COLLATE=en_US.UTF-8    
+    ##  [5] LC_MONETARY=de_BE.UTF-8    LC_MESSAGES=en_US.UTF-8   
+    ##  [7] LC_PAPER=de_BE.UTF-8       LC_NAME=C                 
+    ##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+    ## [11] LC_MEASUREMENT=de_BE.UTF-8 LC_IDENTIFICATION=C       
     ## 
     ## attached base packages:
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] forcats_0.5.1   stringr_1.4.0   dplyr_1.0.7     purrr_0.3.4    
-    ## [5] readr_2.0.2     tidyr_1.1.4     tibble_3.1.5    ggplot2_3.3.5  
+    ## [1] forcats_0.5.1   stringr_1.4.0   dplyr_1.0.8     purrr_0.3.4    
+    ## [5] readr_2.1.2     tidyr_1.2.0     tibble_3.1.6    ggplot2_3.3.5  
     ## [9] tidyverse_1.3.1
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] Rcpp_1.0.7        lubridate_1.8.0   here_1.0.1        png_0.1-7        
-    ##  [5] assertthat_0.2.1  rprojroot_2.0.2   digest_0.6.29     utf8_1.2.2       
-    ##  [9] R6_2.5.1          cellranger_1.1.0  backports_1.2.1   reprex_2.0.1     
-    ## [13] evaluate_0.14     highr_0.9         httr_1.4.2        blogdown_1.5     
-    ## [17] pillar_1.6.4      rlang_0.4.12      readxl_1.3.1      rstudioapi_0.13  
-    ## [21] jquerylib_0.1.4   DT_0.19           rmarkdown_2.11    labeling_0.4.2   
-    ## [25] htmlwidgets_1.5.4 munsell_0.5.0     broom_0.7.9       compiler_4.1.0   
-    ## [29] modelr_0.1.8      xfun_0.29         pkgconfig_2.0.3   htmltools_0.5.2  
-    ## [33] tidyselect_1.1.1  bookdown_0.24     fansi_0.5.0       crayon_1.4.1     
-    ## [37] tzdb_0.1.2        dbplyr_2.1.1      withr_2.4.2       grid_4.1.0       
-    ## [41] jsonlite_1.7.2    gtable_0.3.0      lifecycle_1.0.1   DBI_1.1.1        
-    ## [45] magrittr_2.0.1    scales_1.1.1      cli_3.0.1         stringi_1.7.6    
-    ## [49] farver_2.1.0      fs_1.5.2          xml2_1.3.2        bslib_0.3.1      
-    ## [53] ellipsis_0.3.2    generics_0.1.0    vctrs_0.3.8       tools_4.1.0      
-    ## [57] glue_1.6.0        crosstalk_1.1.1   hms_1.1.1         fastmap_1.1.0    
-    ## [61] yaml_2.2.1        colorspace_2.0-2  rvest_1.0.2       knitr_1.37       
-    ## [65] haven_2.4.3       patchwork_1.1.1   sass_0.4.0
+    ##  [1] Rcpp_1.0.8        lubridate_1.8.0   here_1.0.1        png_0.1-7        
+    ##  [5] rprojroot_2.0.2   assertthat_0.2.1  digest_0.6.29     utf8_1.2.2       
+    ##  [9] R6_2.5.1          cellranger_1.1.0  backports_1.4.1   reprex_2.0.1     
+    ## [13] evaluate_0.15     highr_0.9         httr_1.4.2        blogdown_1.8     
+    ## [17] pillar_1.7.0      rlang_1.0.2       curl_4.3.2        readxl_1.3.1     
+    ## [21] rstudioapi_0.13   jquerylib_0.1.4   DT_0.21           rmarkdown_2.12   
+    ## [25] labeling_0.4.2    selectr_0.4-2     htmlwidgets_1.5.4 munsell_0.5.0    
+    ## [29] broom_0.7.12      compiler_4.1.2    modelr_0.1.8      xfun_0.30        
+    ## [33] pkgconfig_2.0.3   htmltools_0.5.2   tidyselect_1.1.2  bookdown_0.24    
+    ## [37] fansi_1.0.2       crayon_1.5.0      tzdb_0.2.0        dbplyr_2.1.1     
+    ## [41] withr_2.5.0       grid_4.1.2        jsonlite_1.8.0    gtable_0.3.0     
+    ## [45] lifecycle_1.0.1   DBI_1.1.2         magrittr_2.0.2    scales_1.1.1     
+    ## [49] cli_3.2.0         stringi_1.7.6     farver_2.1.0      fs_1.5.2         
+    ## [53] xml2_1.3.3        bslib_0.3.1       ellipsis_0.3.2    generics_0.1.2   
+    ## [57] vctrs_0.3.8       tools_4.1.2       glue_1.6.2        crosstalk_1.2.0  
+    ## [61] hms_1.1.1         fastmap_1.1.0     yaml_2.3.5        colorspace_2.0-3 
+    ## [65] rvest_1.0.2       knitr_1.37        haven_2.4.3       patchwork_1.1.1  
+    ## [69] sass_0.4.0
