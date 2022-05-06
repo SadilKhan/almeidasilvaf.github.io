@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>gene family evolution on Fabrício&#39;s personal website</title>
+    <link>/categories/gene-family-evolution/</link>
+    <description>Recent content in gene family evolution on Fabrício&#39;s personal website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 16 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="/categories/gene-family-evolution/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Genome-Wide Analysis of the COBRA-Like Gene Family Supports Gene Expansion through Whole-Genome Duplication in Soybean (*Glycine max*)</title>
+      <link>/publications/cob/</link>
+      <pubDate>Sat, 16 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/publications/cob/</guid>
+      <description>Abstract   The COBRA-like (COBL) gene family has been associated with the regulation of cell wall expansion and cellulose deposition. COBL mutants result in reduced levels and disorganized deposition of cellulose causing defects in the cell wall and inhibiting plant development. In this study, we report the identification of 24 COBL genes (GmCOBL) in the soybean genome. Phylogenetic analysis revealed that the COBL proteins are divided into two groups, which differ by about 170 amino acids in the N-terminal region.</description>
+    </item>
+    
+  </channel>
+</rss>

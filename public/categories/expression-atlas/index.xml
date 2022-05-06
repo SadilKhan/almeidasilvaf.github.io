@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>expression atlas on Fabrício&#39;s personal website</title>
+    <link>/categories/expression-atlas/</link>
+    <description>Recent content in expression atlas on Fabrício&#39;s personal website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 13 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="/categories/expression-atlas/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Pathogenesis-related protein 1 (PR-1) genes in soybean: genome-wide identification, structural analysis and expression profiling under multiple biotic and abiotic stresses</title>
+      <link>/publications/pr1/</link>
+      <pubDate>Wed, 13 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/publications/pr1/</guid>
+      <description>Abstract   Plant pathogenesis-related (PR) proteins are a large group of proteins, classified in 17 families, that are induced by pathological conditions. Here, we characterized the soybean PR-1 (GmPR-1) gene repertoire at the sequence, structural and expression levels. We found 24 GmPR-1 genes, clustered in two phylogenetic groups. GmPR-1 genes are under strong purifying selection, particularly those that emerged by tandem duplications. GmPR-1 promoter regions are abundant in cis-regulatory elements associated with major stress-related transcription factor families, namely WRKY, ERF, HD-Zip, C2H2, NAC, and GATA.</description>
+    </item>
+    
+    <item>
+      <title>cageminer: an R/Bioconductor package to prioritize candidate genes by integrating GWAS and gene coexpression networks</title>
+      <link>/publications/cageminer/</link>
+      <pubDate>Fri, 06 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/publications/cageminer/</guid>
+      <description>Abstract   Soybean (Glycine max [L.] Merr.) is a major crop in animal feed and human nutrition, mainly for its rich protein and oil contents. The remarkable rise in soybean transcriptome studies over the past 5 years generated an enormous amount of RNA-seq data, encompassing various tissues, developmental conditions and genotypes. In this study, we have collected data from 1298 publicly available soybean transcriptome samples, processed the raw sequencing reads and mapped them to the soybean reference genome in a systematic fashion.</description>
+    </item>
+    
+    <item>
+      <title>Systematic analysis of 1298 RNA‐Seq samples and construction of a comprehensive soybean (*Glycine max*) expression atlas</title>
+      <link>/publications/atlas/</link>
+      <pubDate>Sun, 01 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/publications/atlas/</guid>
+      <description>Abstract   Soybean (Glycine max [L.] Merr.) is a major crop in animal feed and human nutrition, mainly for its rich protein and oil contents. The remarkable rise in soybean transcriptome studies over the past 5 years generated an enormous amount of RNA-seq data, encompassing various tissues, developmental conditions and genotypes. In this study, we have collected data from 1298 publicly available soybean transcriptome samples, processed the raw sequencing reads and mapped them to the soybean reference genome in a systematic fashion.</description>
+    </item>
+    
+  </channel>
+</rss>

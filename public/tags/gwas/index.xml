@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>GWAS on Fabrício&#39;s personal website</title>
+    <link>/tags/gwas/</link>
+    <description>Recent content in GWAS on Fabrício&#39;s personal website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 07 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/gwas/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>cageminer</title>
+      <link>/project/cageminer/</link>
+      <pubDate>Sat, 07 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/project/cageminer/</guid>
+      <description>Summary     cageminer aims to integrate GWAS-derived SNPs and coexpression networks to mine candidate genes associated with a particular phenotype. For that, users must define a set of guide genes, which are known genes involved in the studied phenotype. Additionally, the mined candidates can be given a score that favor candidates that are hubs and/or transcription factors. The scores can then be used to rank and select the top n most promising genes for downstream experiments.</description>
+    </item>
+    
+  </channel>
+</rss>

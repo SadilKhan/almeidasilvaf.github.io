@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>rstats on Fabrício&#39;s personal website</title>
+    <link>/categories/rstats/</link>
+    <description>Recent content in rstats on Fabrício&#39;s personal website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 06 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="/categories/rstats/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Upgrading R version with all your packages</title>
+      <link>/blog/2022-05-06-upgrading_r/</link>
+      <pubDate>Fri, 06 May 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/2022-05-06-upgrading_r/</guid>
+      <description>Motivation     Have you ever upgraded R and lost all of your packages? As a consequence, you had to install them again one by one. One. By. One. Oh, man&amp;hellip; Boring, huh? Here, I will guide you on how to upgrade your R version and reinstall your packages automatically. This way, you can spend your time on what really matters: writing some cool R code! This post is inspired by this Gist code.</description>
+    </item>
+    
+    <item>
+      <title>Where can I publish a paper describing my Bioconductor package?</title>
+      <link>/blog/2022-01-03-bioc_publications/</link>
+      <pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/2022-01-03-bioc_publications/</guid>
+      <description>Motivation     When I developed BioNERO, my first R/Bioconductor package, I didn’t know to which journals I could submit the paper describing it. Since then, I’ve seen many other R developers that have faced the same issue. To help solve this problem, here I will guide you on how to do some web scraping to find out the main journals where Bioc developers publish papers describing their packages.</description>
+    </item>
+    
+  </channel>
+</rss>

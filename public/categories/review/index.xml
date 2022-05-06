@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>review on Fabrício&#39;s personal website</title>
+    <link>/categories/review/</link>
+    <description>Recent content in review on Fabrício&#39;s personal website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 25 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="/categories/review/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The state of the art in soybean transcriptomics resources and gene coexpression networks</title>
+      <link>/publications/minireview/</link>
+      <pubDate>Mon, 25 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/publications/minireview/</guid>
+      <description>Abstract   In the past decade, over 3000 samples of soybean transcriptomic data have accumulated in public repositories. Here, we review the state of the art in soybean transcriptomics, highlighting the major microarray and RNA-seq studies that investigated soybean transcriptional programs in different tissues and conditions. Further, we propose approaches for integrating such big data using gene coexpression network and outline important web resources that may facilitate soybean data acquisition and analysis, contributing to the acceleration of soybean breeding and functional genomics research.</description>
+    </item>
+    
+  </channel>
+</rss>

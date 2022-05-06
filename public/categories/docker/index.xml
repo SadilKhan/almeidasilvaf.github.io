@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>docker on Fabrício&#39;s personal website</title>
+    <link>/categories/docker/</link>
+    <description>Recent content in docker on Fabrício&#39;s personal website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 01 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="/categories/docker/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Pushing Docker images to Docker Hub</title>
+      <link>/blog/2021-12-01-push_image_dockerhub/</link>
+      <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/2021-12-01-push_image_dockerhub/</guid>
+      <description>Pushing Docker images to Docker Hub     This post assumes you already have an account on Docker Hub. If you don&amp;rsquo;t, sign up for free before going any further.
+Once you have a Docker Hub account, log in and create the repository where you want to store the image. You can do that by clicking the Create Repository button.
+Building the image     To push an image to Docker Hub, you will need to have it on your machine.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>bioconductor on Fabrício&#39;s personal website</title>
+    <link>/tags/bioconductor/</link>
+    <description>Recent content in bioconductor on Fabrício&#39;s personal website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 07 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/bioconductor/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>BioNERO</title>
+      <link>/project/bionero/</link>
+      <pubDate>Sat, 07 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/project/bionero/</guid>
+      <description>Summary     BioNERO is an R/Bioconductor package that aims to facilitate network analyses by integrating all standard analysis steps, including data preprocessing, inference of gene regulatory and coexpression network from expression data, functional analyses, and network intra and interspecies network comparisons.</description>
+    </item>
+    
+    <item>
+      <title>cageminer</title>
+      <link>/project/cageminer/</link>
+      <pubDate>Sat, 07 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/project/cageminer/</guid>
+      <description>Summary     cageminer aims to integrate GWAS-derived SNPs and coexpression networks to mine candidate genes associated with a particular phenotype. For that, users must define a set of guide genes, which are known genes involved in the studied phenotype. Additionally, the mined candidates can be given a score that favor candidates that are hubs and/or transcription factors. The scores can then be used to rank and select the top n most promising genes for downstream experiments.</description>
+    </item>
+    
+    <item>
+      <title>SoyFungiGCN</title>
+      <link>/project/soyfungigcn/</link>
+      <pubDate>Sat, 07 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/project/soyfungigcn/</guid>
+      <description>Summary     SoyFungiGCN is an R package that contains a Shiny app to let users explore a gene coexpression network inferred from RNA-seq data of soybean tissues infected with phytopathogenic fungi. The Shiny app is also available online at https://soyfungigcn.venanciogroup.uenf.br.</description>
+    </item>
+    
+  </channel>
+</rss>

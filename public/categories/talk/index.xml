@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>talk on Fabrício&#39;s personal website</title>
+    <link>/categories/talk/</link>
+    <description>Recent content in talk on Fabrício&#39;s personal website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 22 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="/categories/talk/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bioinformatics in Modern Biology: computational genomics as a tool
+to unravel the soybean genome and gene regulation
+</title>
+      <link>/talk/sbv2021/</link>
+      <pubDate>Mon, 22 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/talk/sbv2021/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Prioritizing soybean resistance genes against fungal diseases by integrating GWAS and gene coexpression networks</title>
+      <link>/talk/pgce2021/</link>
+      <pubDate>Tue, 19 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/talk/pgce2021/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>cageminer: mining candidate genes by integrating GWAS and gene coexpression networks</title>
+      <link>/talk/bioc2021/</link>
+      <pubDate>Fri, 06 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/talk/bioc2021/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Priorização de genes de resistência a fungos em soja (*Glycine max*) por meio da integração de associação genômica ampla e redes de coexpressão gênica</title>
+      <link>/talk/viconpg/</link>
+      <pubDate>Wed, 23 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/talk/viconpg/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

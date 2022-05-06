@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>GWAS on Fabrício&#39;s personal website</title>
+    <link>/categories/gwas/</link>
+    <description>Recent content in GWAS on Fabrício&#39;s personal website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 27 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="/categories/gwas/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Integrating omics approaches to discover and prioritize candidate genes involved in oil biosynthesis in soybean</title>
+      <link>/publications/soybeanoil/</link>
+      <pubDate>Mon, 27 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/publications/soybeanoil/</guid>
+      <description>Abstract   Soybean is one of the major sources of edible protein and oil. Oil content is a quantitative trait that is significantly determined by genetic and environmental factors. Over the past 30 years, a large volume of soybean genetic, genomic, and transcriptomic data have been accumulated. Nevertheless, integrative analyses of such data remain scarce, in spite of their importance for crop improvement. We hypothesized that the co-occurrence of genomic regions for oil-related traits in different studies may reveal more stable regions encompassing important genetic determinants of oil content and quality in soybean.</description>
+    </item>
+    
+    <item>
+      <title>Integration of genome-wide association studies and gene coexpression networks unveils promising soybean resistance genes against five common fungal pathogens</title>
+      <link>/publications/soyfungigcn/</link>
+      <pubDate>Wed, 01 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/publications/soyfungigcn/</guid>
+      <description>Abstract   Soybean is one of the most important legume crops worldwide. However, soybean yield is dramatically affected by fungal diseases, leading to economic losses of billions of dollars yearly. Here, we integrated publicly available genome-wide association studies and transcriptomic data to prioritize candidate genes associated with resistance to Cadophora gregata, Fusarium graminearum, Fusarium virguliforme, Macrophomina phaseolina, and Phakopsora pachyrhizi. We identified 188, 56, 11, 8, and 3 high-confidence candidates for resistance to F.</description>
+    </item>
+    
+  </channel>
+</rss>
